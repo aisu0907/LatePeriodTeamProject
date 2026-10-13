@@ -78,9 +78,16 @@ void AAdventurerCharacter::Move(const FInputActionValue& Value)
 	const FVector2D Input = Value.Get<FVector2D>();
 	const FRotator YawRot(0.f, GetControlRotation().Yaw, 0.f);
 
+	const FVector Forward = FRotationMatrix(YawRot).GetUnitAxis(EAxis::X);
+	const FVector Right = FRotationMatrix(YawRot).GetUnitAxis(EAxis::Y);
+
+	AddMovementInput(Forward, Input.Y);
+	AddMovementInput(Right, Input.X);
 }
 
 void AAdventurerCharacter::Look(const FInputActionValue& Value)
 {
-
+	const FVector2D Input = Value.Get<FVector2D>();
+	AddControllerYawInput(Input.X);
+	AddControllerPitchInput(Input.Y);
 }
