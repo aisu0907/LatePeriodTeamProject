@@ -89,5 +89,5 @@ void AAdventurerCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D Input = Value.Get<FVector2D>();
 	AddControllerYawInput(Input.X);
-	AddControllerPitchInput(Input.Y);
+	AddControllerPitchInput(-Input.Y);
 }

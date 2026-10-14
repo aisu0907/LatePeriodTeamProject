@@ -7,8 +7,18 @@
 ATrapBase::ATrapBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(Root);
+
+	TrapMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TrapMesh"));
+	TrapMesh->SetupAttachment(Root);
+
+	TriggerVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerVolume"));
+	TriggerVolume->SetupAttachment(Root);
+	TriggerVolume->SetCollisionProfileName(TEXT("OverlapOnlyPawn"));
+	TriggerVolume->SetGenerateOverlapEvents(true);
 }
 
 // Called when the game starts or when spawned
@@ -18,10 +28,4 @@ void ATrapBase::BeginPlay()
 	
 }
 
-// Called every frame
-void ATrapBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
