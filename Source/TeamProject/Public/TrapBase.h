@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "TrapBase.generated.h"
 
-class UBoxComponent;
 class UStaticMeshComponent;
 
 //トラップの状態管理用
@@ -43,7 +42,7 @@ protected:
 	//大まかな条件分岐
 	virtual bool CanTrigger(AActor* TriggeringActor) const;
 
-	//トラップで起こす処理
+	//トラップで相手に起こす処理
 	UFUNCTION(BlueprintNativeEvent, Category = "Trap")
 	void ActivateTrap(AActor* TriggeringActor);
 	virtual void ActivateTrap_Implementation(AActor* TriggeringActor);
@@ -56,36 +55,50 @@ protected:
 	//プレイヤーチェックポイント転送用
 	void SendToCheckpoint(AActor* Victim);
 
+	//衝突判定
 	UFUNCTION()
-	void OnTriggerBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-		bool bFromSweep, const FHitResult& SweepResult);
+	void OnTriggerBeginOverlap(
+		UPrimitiveComponent* OverlappedComp, 
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, 
+		int32 OtherBodyIndex,
+		bool bFromSweep, 
+		const FHitResult& SweepResult);
 
+	//トラップの動き
+	void TriggerTrap(AActor* TriggeringActor);
+	//
+	void ExecuteActivation(TWeakObjectPtr<AActor> WeakActor);
+	void FinishCooldown();
 protected:	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> Root;
 
+	//メッシュ
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> TrapMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UBoxComponent> TriggerVolume;
+	TObjectPtr<UShapeComponent> TriggerVolume;
 
-	/** 発動までの遅延(予兆演出用) */
+	//予兆演出用
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap", meta = (ClampMin = "0.0"))
 	float ActivationDelay = 0.f;
 
+	//トラップのクールタイム
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap", meta = (ClampMin = "0.0"))
 	float CooldownTime = 3.f;
 
-	/** true なら一度発動したら二度と作動しない */
+	//一度きりのトラップ用 trueでもう発動しない
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap")
 	bool bOneShot = false;
 
+	//トラップの状態保存用
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Trap")
 	ETrapState TrapState = ETrapState::Idle;
 
+	//タイマー管理用
 	FTimerHandle ActivationTimer;
 	FTimerHandle CooldownTimer;
 };

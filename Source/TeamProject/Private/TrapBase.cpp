@@ -12,20 +12,39 @@ ATrapBase::ATrapBase()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
+	//ÉÅÉbÉVÉÖçÏê¨
+
 	TrapMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TrapMesh"));
 	TrapMesh->SetupAttachment(Root);
-
-	TriggerVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerVolume"));
-	TriggerVolume->SetupAttachment(Root);
-	TriggerVolume->SetCollisionProfileName(TEXT("OverlapOnlyPawn"));
-	TriggerVolume->SetGenerateOverlapEvents(true);
 }
 
 // Called when the game starts or when spawned
 void ATrapBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (TriggerVolume)
+	{
+
+	}
 }
 
+//è’ìÀîªíËs
+void ATrapBase::OnTriggerBeginOverlap(
+	UPrimitiveComponent* OverlappedComp, 
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex, 
+	bool bFromSweep, 
+	const FHitResult& SweepResult)
+{
+	if (CanTrigger(OtherActor))
+	{
+		TriggerTrap(OtherActor);
+	}
+}
 
+bool ATrapBase::CanTrigger(AActor* TriggeringActor) const
+{
+	return TrapState == ETrapState::Idle && Cast<APawn>(TriggeringActor) != nullptr;
+}
