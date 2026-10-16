@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "TrapBase.generated.h"
 
+class UShapeComponent;
 class UStaticMeshComponent;
 
 //トラップの状態管理用
@@ -79,6 +80,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> TrapMesh;
 
+	//コリジョン
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UShapeComponent> TriggerVolume;
 
