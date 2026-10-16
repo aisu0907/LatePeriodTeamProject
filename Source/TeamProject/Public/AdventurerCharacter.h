@@ -47,10 +47,6 @@ private:
     UPROPERTY(VisibleAnywhere, Category = "Camera")
     UCameraComponent* FollowCamera;
 
-    //カメラアーム距離
-    UPROPERTY(EditAnywhere, Category = "Camera")
-    float DefaultArmLength = 400.f;
-
     //インプットアクションコンポーネント
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputMappingContext* DefaultMappingContext;
@@ -70,4 +66,10 @@ private:
     //プレイヤーの移動管理用
     UPROPERTY()
     UCharacterMovementComponent* MoveSetting;
+
+    //カメラアーム距離
+    UPROPERTY(EditAnywhere, Category = "Camera")
+    float DefaultArmLength = 400.f;
+
+    //キャラクタ移動スピード
 };
