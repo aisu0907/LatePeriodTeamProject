@@ -34,7 +34,6 @@ void ATrapBase::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: TriggerVolume が設定されていません"), *GetName());
 	}
 }
 
@@ -102,7 +101,6 @@ void ATrapBase::FinishCooldown()
 
 void ATrapBase::ActivateTrap_Implementation(AActor* TriggeringActor)
 {
-	// デフォルトは何もしない(派生で実装)
 }
 
 void ATrapBase::ResetTrap_Implementation()
