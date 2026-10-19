@@ -8,6 +8,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
+using enum EAdvennturerState;
+
 // Sets default values
 AAdventurerCharacter::AAdventurerCharacter()
 {
@@ -40,7 +42,9 @@ void AAdventurerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//プレイヤー・カメラのステータス設定
 	CameraBoom->TargetArmLength = DefaultArmLength;
+	MoveSetting->AirControl = AirControllPower;
 
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
@@ -75,6 +79,9 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 //移動関数
 void AAdventurerCharacter::Move(const FInputActionValue& Value)
 {
+	if (AdvennturerState == Inoperable)
+		return;
+
 	const FVector2D Input = Value.Get<FVector2D>();
 	const FRotator YawRot(0.f, GetControlRotation().Yaw, 0.f);
 

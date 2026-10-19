@@ -17,7 +17,6 @@ ATrapBase::ATrapBase()
 	SetRootComponent(Root);
 
 	//メッシュ作成
-
 	TrapMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TrapMesh"));
 	TrapMesh->SetupAttachment(Root);
 }
@@ -27,6 +26,7 @@ void ATrapBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//コリジョンが設定されていたら
 	if (TriggerVolume)
 	{
 		//TriggerVolumeをOverlapに登録

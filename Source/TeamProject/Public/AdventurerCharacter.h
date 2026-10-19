@@ -86,6 +86,10 @@ private:
     UPROPERTY(EditAnywhere, Category = "Character")
     float MoveSpeed = 0;
     
+    //キャラクターの空中コントロール
+    UPROPERTY(EditAnywhere, Category = "Character")
+    float AirControllPower = 0;
+
     //カメラアーム距離
 
     UPROPERTY(EditAnywhere, Category = "Camera")
