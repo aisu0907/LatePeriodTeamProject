@@ -12,6 +12,16 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 
+//プレイヤーの状態管理用
+UENUM(BlueprintType)
+enum class EAdvennturerState : uint8
+{
+    PlayMode,
+    Trapmode,
+    Inoperable,
+};
+
+
 UCLASS()
 class TEAMPROJECT_API AAdventurerCharacter : public ACharacter
 {
@@ -20,6 +30,11 @@ class TEAMPROJECT_API AAdventurerCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AAdventurerCharacter();
+
+    //外部からのトラップの状態参照
+    UFUNCTION(BlueprintPure, Category = "Player")
+    EAdvennturerState GetAdvennturerState() const { return AdvennturerState; }
+
 
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -67,9 +82,19 @@ private:
     UPROPERTY()
     UCharacterMovementComponent* MoveSetting;
 
+    //キャラクタ移動スピード
+    UPROPERTY(EditAnywhere, Category = "Character")
+    float MoveSpeed = 0;
+    
     //カメラアーム距離
+
     UPROPERTY(EditAnywhere, Category = "Camera")
     float DefaultArmLength = 400.f;
 
-    //キャラクタ移動スピード
+
+    //カメラの移動スピード
+    UPROPERTY(EditAnywhere, Category = "Camera")
+    float CameraSpeed = 0;
+
+    EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
 };
