@@ -56,6 +56,9 @@ protected:
 	//プレイヤーチェックポイント転送用
 	void SendToCheckpoint(AActor* Victim);
 
+	//オブジェクトコリジョン設定
+	void SetupTriggerVolume(UShapeComponent* Shape);
+
 	//衝突判定
 	UFUNCTION()
 	void OnTriggerBeginOverlap(
