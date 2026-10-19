@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "TrapBase.h"
@@ -16,7 +16,7 @@ ATrapBase::ATrapBase()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
-	//ƒƒbƒVƒ…ì¬
+	//ãƒ¡ãƒƒã‚·ãƒ¥ä½œæˆ
 
 	TrapMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TrapMesh"));
 	TrapMesh->SetupAttachment(Root);
@@ -29,15 +29,29 @@ void ATrapBase::BeginPlay()
 
 	if (TriggerVolume)
 	{
-		//TriggerVolume‚ğOverlap‚É“o˜^
+		//TriggerVolumeã‚’Overlapã«ç™»éŒ²
 		TriggerVolume->OnComponentBeginOverlap.AddDynamic(this, &ATrapBase::OnTriggerBeginOverlap);
 	}
 	else
 	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: TriggerVolume ãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“"), *GetName());
 	}
 }
 
-//Õ“Ë”»’è
+//ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚»ãƒƒãƒˆç”¨
+void ATrapBase::SetupTriggerVolume(UShapeComponent* Shape)
+{
+	if (!Shape)
+		return;
+
+	TriggerVolume = Shape;
+	TriggerVolume->SetupAttachment(Root);
+	TriggerVolume->SetCollisionProfileName(TEXT("OverlapOnlyPawn"));
+	TriggerVolume->SetGenerateOverlapEvents(true);
+}
+
+
+//è¡çªåˆ¤å®š
 void ATrapBase::OnTriggerBeginOverlap(
 	UPrimitiveComponent* OverlappedComp, 
 	AActor* OtherActor,
@@ -46,49 +60,54 @@ void ATrapBase::OnTriggerBeginOverlap(
 	bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
-	//Õ“Ë‚µ‚½ƒIƒuƒWƒFƒNƒg‚ğ”»’è
+	//è¡çªã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’åˆ¤å®š
 	if (CanTrigger(OtherActor))
 	{
-		//ƒgƒ‰ƒbƒv‚Ì—\”õ“®ì‚ğ‹N“®
+		//ãƒˆãƒ©ãƒƒãƒ—ã®äºˆå‚™å‹•ä½œã‚’èµ·å‹•
 		TriggerTrap(OtherActor);
 	}
 }
 
-//Pawn”»’è
+//Pawnåˆ¤å®š
 bool ATrapBase::CanTrigger(AActor* TriggeringActor) const
 {
-	//‘Ò‹@ó‘Ô‚ÅƒIƒuƒWƒFƒNƒg‚ªPawnƒNƒ‰ƒX‚Ìê‡true : ‚¶‚á‚È‚¢ê‡ false
+	//å¾…æ©ŸçŠ¶æ…‹ã§ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒPawnã‚¯ãƒ©ã‚¹ã®å ´åˆtrue : ã˜ã‚ƒãªã„å ´åˆ false
 	return TrapState == ETrapState::Idle && Cast<APawn>(TriggeringActor) != nullptr;
 }
 
-//ƒgƒ‰ƒbƒv”­“®
+//ãƒˆãƒ©ãƒƒãƒ—äºˆå‚™å‹•ä½œç™ºå‹•
 void ATrapBase::TriggerTrap(AActor* TriggeringActor)
 {
-	//ƒgƒ‰ƒbƒv‚Ìó‘Ô‚ğ”­“®ó‘Ô‚É
+	//ãƒˆãƒ©ãƒƒãƒ—ã®çŠ¶æ…‹ã‚’ç™ºå‹•çŠ¶æ…‹ã«
 	TrapState = ETrapState::Triggered;
 
 	TWeakObjectPtr<AActor> WeakActor = TriggeringActor;
 
+	//äºˆå‚™å‹•ä½œãŒã‚ã‚‹å ´åˆ
 	if (ActivationDelay > 0.f)
 	{
 		FTimerDelegate Delegate = FTimerDelegate::CreateWeakLambda(this, [this, WeakActor]()
 			{
+				//ãƒˆãƒ©ãƒƒãƒ—ç™ºå‹•
 				ExecuteActivation(WeakActor);
 			});
 		GetWorldTimerManager().SetTimer(ActivationTimer, Delegate, ActivationDelay, false);
 	}
 	else
 	{
+		//ãƒˆãƒ©ãƒƒãƒ—ç™ºå‹•
 		ExecuteActivation(WeakActor);
 	}
 }
 
+//ãƒˆãƒ©ãƒƒãƒ—ç™ºå‹•
 void ATrapBase::ExecuteActivation(TWeakObjectPtr<AActor> WeakActor)
 {
-	// ’x‰„’†‚É‘Šè‚ªÁ‚¦‚Ä‚¢‚Ä‚àAƒgƒ‰ƒbƒv©‘Ì‚Í”­“®‚³‚¹‚é
-	// (‘Šè‚ª•K—v‚Èˆ—‚Í”h¶‘¤‚Å nullptr ƒ`ƒFƒbƒN‚·‚é‚±‚Æ)
+	// é…å»¶ä¸­ã«ç›¸æ‰‹ãŒæ¶ˆãˆã¦ã„ã¦ã‚‚ã€ãƒˆãƒ©ãƒƒãƒ—è‡ªä½“ã¯ç™ºå‹•ã•ã›ã‚‹
+	// (ç›¸æ‰‹ãŒå¿…è¦ãªå‡¦ç†ã¯æ´¾ç”Ÿå´ã§ nullptr ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã“ã¨)
 	ActivateTrap(WeakActor.Get());
 
+	//ãƒˆãƒ©ãƒƒãƒ—ã®çŠ¶æ…‹ã‚’å¾…æ©ŸçŠ¶æ…‹ã«
 	TrapState = ETrapState::Cooldown;
 	GetWorldTimerManager().SetTimer(CooldownTimer, this, &ATrapBase::FinishCooldown, CooldownTime, false);
 }
@@ -113,7 +132,7 @@ void ATrapBase::SendToCheckpoint(AActor* Victim)
 
 void ATrapBase::SetTrapEnabled(bool bEnabled)
 {
-	// is’†‚Ìƒ^ƒCƒ}[‚ğ~‚ß‚Ä‚©‚çó‘Ô‚ğØ‚è‘Ö‚¦‚é
+	// é€²è¡Œä¸­ã®ã‚¿ã‚¤ãƒãƒ¼ã‚’æ­¢ã‚ã¦ã‹ã‚‰çŠ¶æ…‹ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
 	GetWorldTimerManager().ClearTimer(ActivationTimer);
 	GetWorldTimerManager().ClearTimer(CooldownTimer);
 
