@@ -6,6 +6,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Character.h"
 
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
+
 // Sets default values
 APickUpItem::APickUpItem()
 {
@@ -37,6 +40,11 @@ void APickUpItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 {
 	if (Cast<ACharacter>(OtherActor))
 	{
+		if (PicupEffect)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(), PicupEffect, GetActorLocation());
+		}
 		Destroy();
 	}
 }

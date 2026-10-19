@@ -8,6 +8,7 @@
 
 class USphereComponent;
 class UStaticMeshComponent;
+class UNiagaraSystem;
 
 UCLASS()
 class TEAMPROJECT_API APickUpItem : public AActor
@@ -32,4 +33,8 @@ protected:
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
+	
+	//ÉiÉCÉAÉKÉâ
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	UNiagaraSystem* PicupEffect;
 };
