@@ -8,6 +8,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
+//アイテム
+#include "PickUpItem.h"
+
 using enum EAdvennturerState;
 
 // Sets default values
@@ -73,6 +76,9 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::Look);
 		EIC->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		//アイテム
+		EIC->BindAction(UseAction, ETriggerEvent::Started, this, &AAdventurerCharacter::UseHeldItem);
 	}
 }
 
@@ -97,4 +103,14 @@ void AAdventurerCharacter::Look(const FInputActionValue& Value)
 	const FVector2D Input = Value.Get<FVector2D>();
 	AddControllerYawInput(Input.X);
 	AddControllerPitchInput(-Input.Y);
+}
+
+//アイテム使用関数
+void AAdventurerCharacter::UseHeldItem()
+{
+	if (HeldItem)
+	{
+		HeldItem->Use();
+		HeldItem = nullptr;//一回きり
+	}
 }

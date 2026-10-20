@@ -12,6 +12,9 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 
+//アイテム
+class APickUpItem;
+
 //プレイヤーの状態管理用
 UENUM(BlueprintType)
 enum class EAdvennturerState : uint8
@@ -42,6 +45,9 @@ public:
     // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+    //手に持っているアイテム
+    UPROPERTY()
+    APickUpItem* HeldItem = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
@@ -77,6 +83,13 @@ private:
     //ジャンプアクション
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* JumpAction;
+
+    //アイテム使用アクション
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* UseAction;
+
+    //アイテム使用関数
+    void UseHeldItem();
 
     //プレイヤーの移動管理用
     UPROPERTY()
