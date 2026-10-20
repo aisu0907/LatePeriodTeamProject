@@ -19,6 +19,8 @@ public:
 	// Sets default values for this actor's properties
 	APickUpItem();
 
+	void OnPickedUp(ACharacter* NewOwner);
+	void Use();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,5 +38,15 @@ protected:
 	
 	//ÉiÉCÉAÉKÉâ
 	UPROPERTY(EditAnywhere, Category = "Effect")
-	UNiagaraSystem* PicupEffect;
+	UNiagaraSystem* PickupEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Effect")
+		FRotator EffectRotation = FRotator::ZeroRotator;
+
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	FVector EffectScale = FVector(1.f);
+
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	FVector EffectOffset = FVector::ZeroVector;
+
 };
