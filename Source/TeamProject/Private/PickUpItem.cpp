@@ -9,6 +9,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 
+#include "AdventurerCharacter.h"
+
 // Sets default values
 APickUpItem::APickUpItem()
 {
@@ -38,14 +40,31 @@ void APickUpItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<ACharacter>(OtherActor))
+	AAdventurerCharacter* Ch = Cast<AAdventurerCharacter>(OtherActor);
+	if (Ch && !Ch->HeldItem)
 	{
-		if (PicupEffect)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				GetWorld(), PicupEffect, GetActorLocation());
-		}
-		Destroy();
+		Ch->HeldItem = this;
+		OnPickedUp(Ch);
 	}
+}
+
+
+void APickUpItem::OnPickedUp(ACharacter* NewOwner)
+{
+	Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AttachToComponent(NewOwner->GetMesh(),
+		FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+		TEXT("hand_r"));
+}
+
+void APickUpItem::Use()
+{
+	if (PickupEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(), PickupEffect, GetActorLocation() + EffectOffset,
+			GetActorRotation() + EffectRotation, EffectScale);
+	}
+	Destroy();
 }
 
