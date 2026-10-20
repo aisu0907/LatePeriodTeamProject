@@ -2,14 +2,15 @@
 
 #include "GamePlayModeBase.h"
 #include "Kismet/GameplayStatics.h"
+//#include "AAdventurerCharacter.h"
 
 AGamePlayModeBase::AGamePlayModeBase()
 {
-    DefaultPawnClass = AMyCharacter::StaticClass();
+  /*  DefaultPawnClass =::StaticClass();
     PlayerControllerClass = AMyPlayerController::StaticClass();
     GameStateClass = AMyGameState::StaticClass();
     PlayerStateClass = AMyPlayerState::StaticClass();
-    HUDClass = AMyHUD::StaticClass();
+    HUDClass = AMyHUD::StaticClass();*/
 }
 
 AGamePlayModeBase::AGamePlayModeBase()

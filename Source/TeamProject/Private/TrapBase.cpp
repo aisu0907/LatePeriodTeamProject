@@ -7,6 +7,15 @@
 #include "GameFramework/Pawn.h"
 #include "TimerManager.h"
 
+//エリアの種類分け
+UENUM(BlueprintType)
+enum class ETrapType : uint8
+{
+	Wall,
+	Floor,
+
+};
+
 // Sets default values
 ATrapBase::ATrapBase()
 {
