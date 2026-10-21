@@ -8,6 +8,7 @@
 
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
 
 #include "AdventurerCharacter.h"
 
@@ -64,25 +65,56 @@ void APickUpItem::Use()
 {
 	if (AAdventurerCharacter* Ch = Cast<AAdventurerCharacter>(GetAttachParentActor()))
 	{
+		// バフ開始
 		UCharacterMovementComponent* CM = Ch->GetCharacterMovement();
 		const float BaseSpeed = CM->MaxWalkSpeed;
 		CM->MaxWalkSpeed = BaseSpeed * SpeedMultiplier;
+		Ch->bBuffActive = true;
 
-		// 時間が経ったら元の速度に戻す
+		// 使った瞬間の単発エフェクト
+		if (UseEffect)
+		{
+			UNiagaraComponent* UseNC = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(), UseEffect,
+				Ch->GetActorLocation() + EffectOffset,
+				Ch->GetActorRotation() + EffectRotation,
+				EffectScale);
+			if (UseNC)
+			{
+				// 念のため2秒後に消す
+				FTimerHandle UseHandle;
+				Ch->GetWorldTimerManager().SetTimer(UseHandle,
+					FTimerDelegate::CreateWeakLambda(UseNC, [UseNC]()
+						{
+							UseNC->DestroyComponent();
+						}),
+					2.f, false);
+			}
+		}
+
+		// バフ中、キャラにくっつけてエフェクトを出し続ける
+		TWeakObjectPtr<UNiagaraComponent> EffectComp;
+		if (PickupEffect)
+		{
+			EffectComp = UNiagaraFunctionLibrary::SpawnSystemAttached(
+				PickupEffect, Ch->GetRootComponent(), NAME_None,
+				EffectOffset, EffectRotation, EffectScale,
+				EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+		}
+
+		// バフ終了時の処理
 		FTimerHandle Handle;
 		Ch->GetWorldTimerManager().SetTimer(Handle,
-			FTimerDelegate::CreateWeakLambda(Ch, [Ch, BaseSpeed]()
+			FTimerDelegate::CreateWeakLambda(Ch, [Ch, BaseSpeed, EffectComp]()
 				{
 					Ch->GetCharacterMovement()->MaxWalkSpeed = BaseSpeed;
+					Ch->bBuffActive = false;
+					if (UNiagaraComponent* NC = EffectComp.Get())
+					{
+						NC->DestroyComponent();   // エフェクトを消す
+					}
 				}),
 			BuffDuration, false);
-	}
-
-	if (PickupEffect)
-	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(), PickupEffect, GetActorLocation() + EffectOffset,
-			GetActorRotation() + EffectRotation, EffectScale);
 	}
 	Destroy();
 }
