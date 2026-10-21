@@ -11,6 +11,9 @@
 
 #include "AdventurerCharacter.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+#include "TimerManager.h"
+
 // Sets default values
 APickUpItem::APickUpItem()
 {
@@ -59,6 +62,22 @@ void APickUpItem::OnPickedUp(ACharacter* NewOwner)
 
 void APickUpItem::Use()
 {
+	if (AAdventurerCharacter* Ch = Cast<AAdventurerCharacter>(GetAttachParentActor()))
+	{
+		UCharacterMovementComponent* CM = Ch->GetCharacterMovement();
+		const float BaseSpeed = CM->MaxWalkSpeed;
+		CM->MaxWalkSpeed = BaseSpeed * SpeedMultiplier;
+
+		// ŽžŠÔ‚ªŒo‚Á‚½‚çŒ³‚Ì‘¬“x‚É–ß‚·
+		FTimerHandle Handle;
+		Ch->GetWorldTimerManager().SetTimer(Handle,
+			FTimerDelegate::CreateWeakLambda(Ch, [Ch, BaseSpeed]()
+				{
+					Ch->GetCharacterMovement()->MaxWalkSpeed = BaseSpeed;
+				}),
+			BuffDuration, false);
+	}
+
 	if (PickupEffect)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(

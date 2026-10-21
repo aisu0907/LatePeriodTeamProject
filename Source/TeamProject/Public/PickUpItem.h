@@ -49,4 +49,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Effect")
 	FVector EffectOffset = FVector::ZeroVector;
 
+	// 仮のバフ・デバフ設定
+	UPROPERTY(EditAnywhere, Category = "Buff")
+	float SpeedMultiplier = 1.5f;   // 1より大きい=バフ、小さい=デバフ
+
+	UPROPERTY(EditAnywhere, Category = "Buff")
+	float BuffDuration = 5.f;       // 効果時間(秒)
 };
