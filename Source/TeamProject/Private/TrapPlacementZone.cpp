@@ -37,13 +37,9 @@ void ATrapPlacementZone::Tick(float DeltaTime)
 //トラップをマスの中心に吸着
 bool ATrapPlacementZone::TrySnap(const FVector& WorldPoint, FVector& OutLocation, FIntPoint& OutCell) const
 {
-<<<<<<< HEAD
-	return 0;
-=======
 	//ワールド座標からローカル座標に変更
 	const FTransform T = GetActorTransform();
 	const FVector Local = T.InverseTransformPositionNoScale(WorldPoint);
->>>>>>> 48147ad95b31a5d4dd52c2c1cb39249aa96c4aa4
 
 	OutCell = FIntPoint(
 		FMath::FloorToInt(Local.X / CellSize),
@@ -70,12 +66,8 @@ bool ATrapPlacementZone::TrySnap(const FVector& WorldPoint, FVector& OutLocation
 //トラップが設置できるか
 bool ATrapPlacementZone::IsCellFree(FIntPoint Cell) const
 {
-<<<<<<< HEAD
-	return 0;
-=======
 	const TWeakObjectPtr<AActor>* Found = Occupied.Find(Cell);
 	return !Found || !Found->IsValid();
->>>>>>> 48147ad95b31a5d4dd52c2c1cb39249aa96c4aa4
 }
 
 //トラップ設置処理
