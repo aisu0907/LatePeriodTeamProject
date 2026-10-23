@@ -15,6 +15,9 @@ class UInputAction;
 //アイテム
 class APickUpItem;
 
+//アニメーション
+class UAnomSequence;
+
 //プレイヤーの状態管理用
 UENUM(BlueprintType)
 enum class EAdvennturerState : uint8
@@ -52,6 +55,9 @@ public:
     //バフ効果があるか
     bool bBuffActive = false;
 
+    //アニメーション
+    UPROPERTY(EditAnywhere, Category = "Animation")
+    TObjectPtr<UAnimSequence> TestAnim;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
