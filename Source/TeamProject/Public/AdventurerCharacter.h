@@ -49,6 +49,9 @@ public:
     UPROPERTY()
     APickUpItem* HeldItem = nullptr;
 
+    //ƒoƒtŒø‰Ê‚ª‚ ‚é‚©
+    bool bBuffActive = false;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
