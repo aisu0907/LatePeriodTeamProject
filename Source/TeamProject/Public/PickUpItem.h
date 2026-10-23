@@ -36,9 +36,13 @@ protected:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 		bool bFromSweep, const FHitResult& SweepResult);
 	
-	//ナイアガラ
-	UPROPERTY(EditAnywhere, Category = "Effect")
+	// バフ中に出し続けるエフェクト
+	UPROPERTY(EditAnywhere, Category = "Effect", meta = (DisplayName = "Buff"))
 	UNiagaraSystem* PickupEffect;
+
+	// 使った瞬間に1回だけ出すエフェクト
+	UPROPERTY(EditAnywhere, Category = "Effect", meta = (DisplayName = "Use"))
+	UNiagaraSystem* UseEffect;
 
 	UPROPERTY(EditAnywhere, Category = "Effect")
 		FRotator EffectRotation = FRotator::ZeroRotator;
