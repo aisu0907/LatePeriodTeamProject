@@ -55,12 +55,10 @@ public:
     //バフ効果があるか
     bool bBuffActive = false;
 
-<<<<<<< HEAD
-=======
     //アニメーション
     UPROPERTY(EditAnywhere, Category = "Animation")
     TObjectPtr<UAnimSequence> TestAnim;
->>>>>>> 48147ad95b31a5d4dd52c2c1cb39249aa96c4aa4
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
