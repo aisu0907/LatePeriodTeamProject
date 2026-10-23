@@ -13,7 +13,7 @@ AGamePlayModeBase::AGamePlayModeBase()
     HUDClass = AMyHUD::StaticClass();*/
 }
 
-AGamePlayModeBase::AGamePlayModeBase()
+void AGamePlayModeBase::BeginPlay()
 {
     Super::BeginPlay();
 

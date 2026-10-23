@@ -31,12 +31,13 @@ void ATrapPlacementZone::Tick(float DeltaTime)
 
 bool ATrapPlacementZone::TrySnap(const FVector& WorldPoint, FVector& OutLocation, FIntPoint& OutCell) const
 {
+	return 0;
 
 }
 
 bool ATrapPlacementZone::IsCellFree(FIntPoint Cell) const
 {
-
+	return 0;
 }
 
 void ATrapPlacementZone::RegisterTrap(FIntPoint Cell, AActor* Trap)

@@ -108,7 +108,7 @@ void AAdventurerCharacter::Look(const FInputActionValue& Value)
 //アイテム使用関数
 void AAdventurerCharacter::UseHeldItem()
 {
-	if (HeldItem)
+	if (HeldItem&&!bBuffActive)
 	{
 		HeldItem->Use();
 		HeldItem = nullptr;//一回きり
