@@ -15,6 +15,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TimerManager.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+
 // Sets default values
 APickUpItem::APickUpItem()
 {
@@ -71,17 +75,16 @@ void APickUpItem::Use()
 		CM->MaxWalkSpeed = BaseSpeed * SpeedMultiplier;
 		Ch->bBuffActive = true;
 
-		// 使った瞬間の単発エフェクト
+		const FVector Loc = Ch->GetActorLocation() + EffectOffset;
+		const FRotator Rot = Ch->GetActorRotation() + EffectRotation;
+
+		// 使った瞬間の単発エフェクト(Niagara)
 		if (UseEffect)
 		{
 			UNiagaraComponent* UseNC = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				GetWorld(), UseEffect,
-				Ch->GetActorLocation() + EffectOffset,
-				Ch->GetActorRotation() + EffectRotation,
-				EffectScale);
+				GetWorld(), UseEffect, Loc, Rot, EffectScale);
 			if (UseNC)
 			{
-				// 念のため2秒後に消す
 				FTimerHandle UseHandle;
 				Ch->GetWorldTimerManager().SetTimer(UseHandle,
 					FTimerDelegate::CreateWeakLambda(UseNC, [UseNC]()
@@ -92,29 +95,50 @@ void APickUpItem::Use()
 			}
 		}
 
-		// バフ中、キャラにくっつけてエフェクトを出し続ける
-		TWeakObjectPtr<UNiagaraComponent> EffectComp;
+		// 使った瞬間の単発エフェクト(Cascade)
+		if (UseParticle)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(
+				GetWorld(), UseParticle, Loc, Rot, EffectScale, true);
+		}
+
+		// バフ中に出し続けるエフェクト(Niagara)
+		TWeakObjectPtr<UNiagaraComponent> BuffNC;
 		if (PickupEffect)
 		{
-			EffectComp = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			BuffNC = UNiagaraFunctionLibrary::SpawnSystemAttached(
 				PickupEffect, Ch->GetRootComponent(), NAME_None,
 				EffectOffset, EffectRotation, EffectScale,
 				EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
 		}
 
+		// バフ中に出し続けるエフェクト(Cascade)
+		TWeakObjectPtr<UParticleSystemComponent> BuffPSC;
+		if (BuffParticle)
+		{
+			BuffPSC = UGameplayStatics::SpawnEmitterAttached(
+				BuffParticle, Ch->GetRootComponent(), NAME_None,
+				EffectOffset, EffectRotation, EffectScale,
+				EAttachLocation::KeepRelativeOffset, false);
+		}
+
 		// バフ終了時の処理
 		FTimerHandle Handle;
 		Ch->GetWorldTimerManager().SetTimer(Handle,
-			FTimerDelegate::CreateWeakLambda(Ch, [Ch, BaseSpeed, EffectComp]()
+			FTimerDelegate::CreateWeakLambda(Ch, [Ch, BaseSpeed, BuffNC, BuffPSC]()
 				{
 					Ch->GetCharacterMovement()->MaxWalkSpeed = BaseSpeed;
 					Ch->bBuffActive = false;
-					if (UNiagaraComponent* NC = EffectComp.Get())
+					if (UNiagaraComponent* NC = BuffNC.Get())
 					{
-						NC->DestroyComponent();   // エフェクトを消す
+						NC->DestroyComponent();
+					}
+					if (UParticleSystemComponent* PSC = BuffPSC.Get())
+					{
+						PSC->DestroyComponent();
 					}
 				}),
-			BuffDuration, false);
+			FMath::Max(BuffDuration, 0.1f), false);
 	}
 	Destroy();
 }

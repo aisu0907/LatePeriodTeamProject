@@ -10,6 +10,9 @@ class USphereComponent;
 class UStaticMeshComponent;
 class UNiagaraSystem;
 
+//カスケードも読み込めるように
+class UParticleSystem;
+
 UCLASS()
 class TEAMPROJECT_API APickUpItem : public AActor
 {
@@ -43,6 +46,14 @@ protected:
 	// 使った瞬間に1回だけ出すエフェクト
 	UPROPERTY(EditAnywhere, Category = "Effect", meta = (DisplayName = "Use"))
 	UNiagaraSystem* UseEffect;
+
+	//カスケード版
+	UPROPERTY(EditAnywhere, Category = "Effect", meta = (DisplayName = "USECascade"))
+	UParticleSystem* UseParticle;
+
+	// (使用中)
+	UPROPERTY(EditAnywhere, Category = "Effect", meta = (DisplayName = "BUFFCascade"))
+	UParticleSystem* BuffParticle;
 
 	UPROPERTY(EditAnywhere, Category = "Effect")
 		FRotator EffectRotation = FRotator::ZeroRotator;
