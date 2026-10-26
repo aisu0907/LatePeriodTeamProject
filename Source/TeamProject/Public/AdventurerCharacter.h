@@ -16,7 +16,7 @@ class UInputAction;
 class APickUpItem;
 
 //アニメーション
-class UAnomSequence;
+class UAnimSequence;
 
 //プレイヤーの状態管理用
 UENUM(BlueprintType)
@@ -57,7 +57,13 @@ public:
 
     //アニメーション
     UPROPERTY(EditAnywhere, Category = "Animation")
-    TObjectPtr<UAnimSequence> TestAnim;
+    TObjectPtr<UAnimSequence> IdleAnim;
+
+    UPROPERTY(EditAnywhere, Category = "Animation")
+    TObjectPtr<UAnimSequence> WalkAnim;
+
+    UPROPERTY(EditAnywhere, Category = "Animation")
+    TObjectPtr<UAnimSequence> JumpAnim;
 
 protected:
 	// Called when the game starts or when spawned
@@ -117,6 +123,10 @@ private:
 
     UPROPERTY(EditAnywhere, Category = "Camera")
     float DefaultArmLength = 400.f;
+
+    //アニメーション
+    UPROPERTY()
+    TObjectPtr<UAnimSequence>CurrentAnim;
 
 
     //カメラの移動スピード

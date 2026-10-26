@@ -11,11 +11,17 @@
 //アイテム
 #include "PickUpItem.h"
 
+//アニメーション
+#include"Animation/AnimSequence.h"
+
 using enum EAdvennturerState;
 
 // Sets default values
 AAdventurerCharacter::AAdventurerCharacter()
 {
+	//アニメーション
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -45,6 +51,8 @@ void AAdventurerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	
+
 	//プレイヤー・カメラのステータス設定
 	CameraBoom->TargetArmLength = DefaultArmLength;
 	MoveSetting->AirControl = AirControllPower;
@@ -62,6 +70,23 @@ void AAdventurerCharacter::BeginPlay()
 void AAdventurerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//アニメーション
+	UAnimSequence* Next = IdleAnim;
+	if (MoveSetting->IsFalling())
+	{
+		Next = JumpAnim;
+	}
+	else if (GetVelocity().Size2D() > 3.f)
+	{
+		Next = WalkAnim;
+	}
+	//変わった時だけ再生しなおす(舞フレーム呼ぶと最初で止まる)
+	if (Next && Next != CurrentAnim)
+	{
+		CurrentAnim = Next;
+		GetMesh()->PlayAnimation(Next, true);
+	}
 
 }
 
