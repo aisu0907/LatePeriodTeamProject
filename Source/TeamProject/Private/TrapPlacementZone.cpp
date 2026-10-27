@@ -41,10 +41,12 @@ bool ATrapPlacementZone::TrySnap(const FVector& WorldPoint, FVector& OutLocation
 	const FTransform T = GetActorTransform();
 	const FVector Local = T.InverseTransformPositionNoScale(WorldPoint);
 
+	//1マス計算
 	OutCell = FIntPoint(
 		FMath::FloorToInt(Local.X / CellSize),
 		FMath::FloorToInt(Local.Y / CellSize));
 
+	//マスの中心を計算
 	const FVector SnappedLocal(
 		(OutCell.X + 0.5f) * CellSize,
 		(OutCell.Y + 0.5f) * CellSize,
@@ -70,14 +72,21 @@ bool ATrapPlacementZone::IsCellFree(FIntPoint Cell) const
 	return !Found || !Found->IsValid();
 }
 
-//トラップ設置処理
+//トラップ設置演出
 void ATrapPlacementZone::RegisterTrap(FIntPoint Cell, AActor* Trap)
 {
+	if (!Trap) { return; }
+
+	Occupied.Add(Cell, Trap);
+	OnCellOccupied(Cell, true);
 
 }
 
 
 void ATrapPlacementZone::ReleaseCell(FIntPoint Cell)
 {
-
+	if (Occupied.Remove(Cell) > 0)
+	{
+		OnCellOccupied(Cell, false);
+	}
 }

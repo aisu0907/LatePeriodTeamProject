@@ -48,16 +48,19 @@ public:
 	void RegisterTrap(FIntPoint Cell, AActor* Trap);
 	void ReleaseCell(FIntPoint Cell);
 
-
+	// BP側で演出を足すためのフック(本体はBPで実装。C++には書かない)
+	UFUNCTION(BlueprintImplementableEvent, Category = "Zone")
+	void OnCellOccupied(FIntPoint Cell, bool bOccupied);
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 private:
+	// トラップが破壊されたときに呼ばれる(OnDestroyedにバインドされる)
+	UFUNCTION()
+	void HandleTrapDestroyed(AActor* DestroyedActor);
+
 	TMap<FIntPoint, TWeakObjectPtr<AActor>> Occupied;
 	
 };
