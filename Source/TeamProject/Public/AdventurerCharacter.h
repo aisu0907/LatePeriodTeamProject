@@ -65,6 +65,10 @@ public:
     UPROPERTY(EditAnywhere, Category = "Animation")
     TObjectPtr<UAnimSequence> JumpAnim;
 
+    //トラップに当たったらリスポーン
+    UFUNCTION(BlueprintCallable, Category = "Player")
+    void RespawnAtStart();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -134,4 +138,7 @@ private:
     float CameraSpeed = 0;
 
     EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
+
+    //初期位置(リスポーン位置)
+    FTransform StartTransform;
 };

@@ -3,8 +3,7 @@
 
 #include "SpikeTrap.h"
 #include "Components/BoxComponent.h"
-#include "GameFramework/Pawn.h"
-#include "Kismet/GameplayStatics.h"
+#include "AdventurerCharacter.h"
 
 ASpikeTrap::ASpikeTrap()
 {
@@ -25,7 +24,10 @@ void ASpikeTrap::ActivateTrap_Implementation(AActor* TriggeringActor)
 	TriggerBox->GetOverlappingActors(Overlapping, APawn::StaticClass());
 	for (AActor* Actor:Overlapping)
 	{
-		UGameplayStatics::ApplyDamage(Actor, Damage, nullptr, this, nullptr);
+		if (AAdventurerCharacter* Player=Cast<AAdventurerCharacter>(Actor))
+		{
+			Player->RespawnAtStart();
+		}
 	}
 }
 

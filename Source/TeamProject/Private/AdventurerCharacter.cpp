@@ -51,7 +51,8 @@ void AAdventurerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	
+	//初期位置を保存
+	StartTransform = GetActorTransform();
 
 	//プレイヤー・カメラのステータス設定
 	CameraBoom->TargetArmLength = DefaultArmLength;
@@ -138,4 +139,11 @@ void AAdventurerCharacter::UseHeldItem()
 		HeldItem->Use();
 		HeldItem = nullptr;//一回きり
 	}
+}
+
+//リスポーン
+void AAdventurerCharacter::RespawnAtStart()
+{
+	MoveSetting->StopMovementImmediately();
+	TeleportTo(StartTransform.GetLocation(), StartTransform.Rotator());
 }
