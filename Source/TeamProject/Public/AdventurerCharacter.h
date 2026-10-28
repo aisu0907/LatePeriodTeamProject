@@ -74,6 +74,7 @@ protected:
 
 private:	
 
+#pragma region InputFunction
     //キャラ移動関数
     void Move(const FInputActionValue& Value);
     //カメラ操作関数
@@ -81,8 +82,16 @@ private:
 
     //void PlaceTrap();
 
+    //void TrapRotat();
+
+    //void TrapSlotChange();
+
+    //void Cancel
+
     //アイテム使用関数
     void UseHeldItem();
+
+#pragma endregion InputFunction
 
     //追加コンポーネントまとめ
 #pragma region Component
@@ -100,7 +109,7 @@ private:
 #pragma endregion Component
 
     //プレイヤーIputActionまとめ
-#pragma region Input
+#pragma region InputAction
 
     //インプットアクションコンポーネント
     UPROPERTY(EditAnywhere, Category = "Input")
@@ -133,7 +142,16 @@ private:
     //キャンセルアクション
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* CancelAction;
-#pragma endregion Input
+
+    //トラップスロット右アクション
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* RightTrapSlotAction;
+
+    //トラップスロット左アクション
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* LeftTrapSlotAction;
+
+#pragma endregion InputAction
 
     //キャラクターのステータス設定
 #pragma region CharacterSetting
@@ -164,7 +182,16 @@ private:
     //プレイヤーの状態リセット
     EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
 
+
     //初期位置(リスポーン位置)
     FTransform StartTransform;
 
+    UPROPERTY(EditAnywhere, Category = "Trap")
+    TArray  <TObjectPtr<UTrapBase* >>TrapList;
+
+    UPROPERTY(VisibleAnywhere)
+    UTrapBase* SelectedTrap;
+
+    UPROPERTY(VisibleAnywhere)
+    //UTrapBase* 
 };
