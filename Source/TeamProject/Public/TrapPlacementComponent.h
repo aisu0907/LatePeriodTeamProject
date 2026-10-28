@@ -17,12 +17,12 @@ public:
 	// Sets default values for this actor's properties
 	UTrapPlacementComponent();
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-		FActorComponentTickFunction* ThisTickFunction) override;
+	//virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	//	FActorComponentTickFunction* ThisTickFunction) override;
 
 	// 入力アクションから呼ぶ
-	UFUNCTION(BlueprintCallable, Category = "Trap")
-	void PlaceTrap();
+	//UFUNCTION(BlueprintCallable, Category = "Trap")
+	//void PlaceTrap();
 
 	// 床ゾーンに置くトラップ
 	UPROPERTY(EditAnywhere, Category = "Trap")
@@ -37,11 +37,11 @@ public:
 	float TraceDistance = 1500.f;
 
 private:
-	void UpdateTarget();
+	//void UpdateTarget();
 	TSubclassOf<AActor> GetTrapClassFor(const ATrapPlacementZone* Zone) const;
 
-	bool bHasValidTarget = false;
-	FVector TargetLocation = FVector::ZeroVector;
-	FIntPoint TargetCell = FIntPoint::ZeroValue;
-	TWeakObjectPtr<ATrapPlacementZone> TargetZone;
+	//bool bHasValidTarget = false;
+	//FVector TargetLocation = FVector::ZeroVector;
+	//FIntPoint TargetCell = FIntPoint::ZeroValue;
+	//TWeakObjectPtr<ATrapPlacementZone> TargetZone;
 };

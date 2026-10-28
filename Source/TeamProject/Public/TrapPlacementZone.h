@@ -57,9 +57,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	// トラップが破壊されたときに呼ばれる(OnDestroyedにバインドされる)
-	UFUNCTION()
-	void HandleTrapDestroyed(AActor* DestroyedActor);
 
 	TMap<FIntPoint, TWeakObjectPtr<AActor>> Occupied;
 	
