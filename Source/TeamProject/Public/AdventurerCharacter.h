@@ -11,12 +11,11 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class UTrapPlacementCompoent; //トラップ設置Comp
+class UTrapBase; //トラップベース
+class APickUpItem; //アイテム
+class UAnimSequence; //アニメーション
 
-//アイテム
-class APickUpItem;
-
-//アニメーション
-class UAnimSequence;
 
 //プレイヤーの状態管理用
 UENUM(BlueprintType)
@@ -80,6 +79,13 @@ private:
     //カメラ操作関数
     void Look(const FInputActionValue& Value);
 
+    //void PlaceTrap();
+
+    //アイテム使用関数
+    void UseHeldItem();
+
+    //追加コンポーネントまとめ
+#pragma region Component
     //カメラアームコンポーネント
     UPROPERTY(VisibleAnywhere, Category = "Camera")
     USpringArmComponent* CameraBoom;
@@ -87,6 +93,14 @@ private:
     //カメラコンポーネント
     UPROPERTY(VisibleAnywhere, Category = "Camera")
     UCameraComponent* FollowCamera;
+
+    //プレイヤーの移動管理用
+    UPROPERTY()
+    UCharacterMovementComponent* MoveSetting;
+#pragma endregion Component
+
+    //プレイヤーIputActionまとめ
+#pragma region Input
 
     //インプットアクションコンポーネント
     UPROPERTY(EditAnywhere, Category = "Input")
@@ -108,12 +122,21 @@ private:
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* UseAction;
 
-    //アイテム使用関数
-    void UseHeldItem();
+    //トラップ設置アクション
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* PlaceTrapAction;
 
-    //プレイヤーの移動管理用
-    UPROPERTY()
-    UCharacterMovementComponent* MoveSetting;
+    //トラップ回転アクション
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* TrapRotateAction;
+
+    //キャンセルアクション
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* CancelAction;
+#pragma endregion Input
+
+    //キャラクターのステータス設定
+#pragma region CharacterSetting
 
     //キャラクタ移動スピード
     UPROPERTY(EditAnywhere, Category = "Character")
@@ -128,17 +151,20 @@ private:
     UPROPERTY(EditAnywhere, Category = "Camera")
     float DefaultArmLength = 400.f;
 
-    //アニメーション
-    UPROPERTY()
-    TObjectPtr<UAnimSequence>CurrentAnim;
-
-
     //カメラの移動スピード
     UPROPERTY(EditAnywhere, Category = "Camera")
     float CameraSpeed = 0;
 
+#pragma endregion CharacterSetting
+
+    //アニメーション
+    UPROPERTY()
+    TObjectPtr<UAnimSequence>CurrentAnim;
+
+    //プレイヤーの状態リセット
     EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
 
     //初期位置(リスポーン位置)
     FTransform StartTransform;
+
 };

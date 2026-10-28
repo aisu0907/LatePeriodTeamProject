@@ -17,12 +17,12 @@ public:
 	// Sets default values for this actor's properties
 	UTrapPlacementComponent();
 
-	//virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	//	FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction) override;
 
 	// 入力アクションから呼ぶ
-	//UFUNCTION(BlueprintCallable, Category = "Trap")
-	//void PlaceTrap();
+	UFUNCTION(BlueprintCallable, Category = "Trap")
+	void PlaceTrap();
 
 	// 床ゾーンに置くトラップ
 	UPROPERTY(EditAnywhere, Category = "Trap")
