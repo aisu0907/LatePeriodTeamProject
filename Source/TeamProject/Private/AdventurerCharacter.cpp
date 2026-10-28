@@ -100,6 +100,8 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	{
 		EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::Move);
 		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::Look);
+		EIC->BindAction(LookAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PlaceTrap);
+		EIC->BindAction(LookAction, ETriggerEvent::Started, this, &AAdventurerCharacter::TrapRotate);
 		EIC->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
@@ -129,6 +131,24 @@ void AAdventurerCharacter::Look(const FInputActionValue& Value)
 	const FVector2D Input = Value.Get<FVector2D>();
 	AddControllerYawInput(Input.X);
 	AddControllerPitchInput(-Input.Y);
+}
+
+void AAdventurerCharacter::PlaceTrap()
+{
+	if (AdvennturerState != TrapMode)
+		return;
+}
+
+void AAdventurerCharacter::TrapRotate()
+{
+	if (AdvennturerState != TrapMode)
+		return;
+}
+
+void AAdventurerCharacter::TrapSlotChange()
+{
+	if (AdvennturerState != TrapMode)
+		return;
 }
 
 //アイテム使用関数

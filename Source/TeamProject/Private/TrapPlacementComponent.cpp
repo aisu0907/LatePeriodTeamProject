@@ -7,6 +7,7 @@
 #include "GameFramework/Pawn.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
+#include "AdventurerCharacter.h"
 
 // Sets default values
 UTrapPlacementComponent::UTrapPlacementComponent()
@@ -26,6 +27,9 @@ void UTrapPlacementComponent::TickComponent(float DeltaTime, ELevelTick TickType
     FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    if (PlayerChara->GetAdvennturerState() != EAdvennturerState::TrapMode)
+        return;
 
     //見ているオブジェクト確認
     UpdateTarget();

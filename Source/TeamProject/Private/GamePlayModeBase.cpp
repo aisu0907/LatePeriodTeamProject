@@ -1,16 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "GamePlayModeBase.h"
+#include "AdventurerCharacter.h"
 #include "Kismet/GameplayStatics.h"
-//#include "AAdventurerCharacter.h"
 
 AGamePlayModeBase::AGamePlayModeBase()
 {
-  /*  DefaultPawnClass =::StaticClass();
-    PlayerControllerClass = AMyPlayerController::StaticClass();
-    GameStateClass = AMyGameState::StaticClass();
-    PlayerStateClass = AMyPlayerState::StaticClass();
-    HUDClass = AMyHUD::StaticClass();*/
+    
 }
 
 void AGamePlayModeBase::BeginPlay()
@@ -21,3 +17,25 @@ void AGamePlayModeBase::BeginPlay()
     // ‘æ2ˆø”‚ÌbSpawnPlayerController = true ‚ÅPawn‚à¶¬‚³‚ê‚é
     UGameplayStatics::CreatePlayer(this, 1, true);
 }
+
+void AGamePlayModeBase::Result()
+{
+
+}
+
+void AGamePlayModeBase::RoundWin(AAdventurerCharacter* Player)
+{
+    int32 Index = Player->GetPlayerIndex();
+
+    PlayerWin[Index]++;
+
+    for (int32 i = 0; i < 2; i++)
+    {
+        if (PlayerWin[i] >= VictoryConditions)
+        {
+            Result();
+        }
+    }
+}
+
+

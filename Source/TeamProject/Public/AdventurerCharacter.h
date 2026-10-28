@@ -22,7 +22,7 @@ UENUM(BlueprintType)
 enum class EAdvennturerState : uint8
 {
     PlayMode,
-    Trapmode,
+    TrapMode,
     Inoperable,
 };
 
@@ -36,10 +36,12 @@ public:
 	// Sets default values for this character's properties
 	AAdventurerCharacter();
 
-    //外部からのトラップの状態参照
+    //外部からのプレイヤーの状態参照
     UFUNCTION(BlueprintPure, Category = "Player")
     EAdvennturerState GetAdvennturerState() const { return AdvennturerState; }
 
+    UFUNCTION(BlueprintPure, Category = "Player")
+    int32 GetPlayerIndex() const { return PlayerIndex; }
 
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -80,13 +82,13 @@ private:
     //カメラ操作関数
     void Look(const FInputActionValue& Value);
 
-    //void PlaceTrap();
+    void PlaceTrap();
 
-    //void TrapRotat();
+    void TrapRotate();
 
-    //void TrapSlotChange();
+    void TrapSlotChange();
 
-    //void Cancel
+    void Cancel();
 
     //アイテム使用関数
     void UseHeldItem();
@@ -172,16 +174,17 @@ private:
     //カメラの移動スピード
     UPROPERTY(EditAnywhere, Category = "Camera")
     float CameraSpeed = 0;
+    
+    //プレイヤーの状態リセット
+    EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
 
 #pragma endregion CharacterSetting
+
+    UTrapPlacementCompoent* TrapPlacement;
 
     //アニメーション
     UPROPERTY()
     TObjectPtr<UAnimSequence>CurrentAnim;
-
-    //プレイヤーの状態リセット
-    EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
-
 
     //初期位置(リスポーン位置)
     FTransform StartTransform;
@@ -192,6 +195,5 @@ private:
     UPROPERTY(VisibleAnywhere)
     UTrapBase* SelectedTrap;
 
-    UPROPERTY(VisibleAnywhere)
-    //UTrapBase* 
+    int32 PlayerIndex = INDEX_NONE;
 };
