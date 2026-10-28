@@ -27,13 +27,6 @@ void ATrapPlacementZone::BeginPlay()
 	
 }
 
-// Called every frame
-void ATrapPlacementZone::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 //トラップをマスの中心に吸着
 bool ATrapPlacementZone::TrySnap(const FVector& WorldPoint, FVector& OutLocation, FIntPoint& OutCell) const
 {
