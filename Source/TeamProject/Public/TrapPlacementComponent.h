@@ -37,11 +37,11 @@ public:
 	float TraceDistance = 1500.f;
 
 private:
-	//void UpdateTarget();
+	void UpdateTarget();
 	TSubclassOf<AActor> GetTrapClassFor(const ATrapPlacementZone* Zone) const;
 
-	//bool bHasValidTarget = false;
-	//FVector TargetLocation = FVector::ZeroVector;
-	//FIntPoint TargetCell = FIntPoint::ZeroValue;
-	//TWeakObjectPtr<ATrapPlacementZone> TargetZone;
+	bool bHasValidTarget = false;
+	FVector TargetLocation = FVector::ZeroVector;
+	FIntPoint TargetCell = FIntPoint::ZeroValue;
+	TWeakObjectPtr<ATrapPlacementZone> TargetZone;
 };
