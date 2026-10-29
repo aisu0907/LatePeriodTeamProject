@@ -178,6 +178,12 @@ private:
     float CameraSpeed = 0;
     
     //プレイヤーのトラップ設置上限
+    UPROPERTY(EditAnywhere, Category = "Trap")
+    int32 TrapPlaceMax = 5;
+
+    //プレイヤーのトラップ設置上限
+    UPROPERTY(EditAnywhere, Category = "Trap")
+    int32 TrapPlaceCount = 0;
 
     //プレイヤーの状態リセット
     EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;

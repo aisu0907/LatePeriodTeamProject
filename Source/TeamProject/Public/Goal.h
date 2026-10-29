@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Goal.generated.h"
 
+class UBoxComponent;
+class UStaticMeshComponent;
+
 UCLASS()
 class TEAMPROJECT_API AGoal : public AActor
 {
@@ -24,6 +27,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Components")
+	TObjectPtr<USceneComponent> Root;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> GoalMesh;
 
 
+	//ƒRƒŠƒWƒ‡ƒ“
+	UPROPERTY(EditAnywhere, Category = "Components")
+	TObjectPtr<UBoxComponent> GoalCollision;
 };
