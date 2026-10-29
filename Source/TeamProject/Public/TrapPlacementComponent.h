@@ -7,6 +7,7 @@
 #include "TrapPlacementComponent.generated.h"
 
 class ATrapPlacementZone;
+class AAdventurerCharacter;
 
 UCLASS()
 class TEAMPROJECT_API UTrapPlacementComponent : public UActorComponent
@@ -14,6 +15,7 @@ class TEAMPROJECT_API UTrapPlacementComponent : public UActorComponent
 	GENERATED_BODY()
 	
 public:	
+
 	// Sets default values for this actor's properties
 	UTrapPlacementComponent();
 
@@ -44,4 +46,6 @@ private:
 	FVector TargetLocation = FVector::ZeroVector;
 	FIntPoint TargetCell = FIntPoint::ZeroValue;
 	TWeakObjectPtr<ATrapPlacementZone> TargetZone;
+
+	AAdventurerCharacter* PlayerChara;
 };

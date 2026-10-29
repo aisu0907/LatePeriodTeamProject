@@ -22,7 +22,7 @@ UENUM(BlueprintType)
 enum class EAdvennturerState : uint8
 {
     PlayMode,
-    Trapmode,
+    TrapMode,
     Inoperable,
 };
 
@@ -36,10 +36,12 @@ public:
 	// Sets default values for this character's properties
 	AAdventurerCharacter();
 
-    //外部からのトラップの状態参照
+    //外部からのプレイヤーの状態参照
     UFUNCTION(BlueprintPure, Category = "Player")
     EAdvennturerState GetAdvennturerState() const { return AdvennturerState; }
 
+    UFUNCTION(BlueprintPure, Category = "Player")
+    int32 GetPlayerIndex() const { return PlayerIndex; }
 
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -76,15 +78,24 @@ protected:
   
 private:	
 
+#pragma region InputFunction
     //キャラ移動関数
     void Move(const FInputActionValue& Value);
     //カメラ操作関数
     void Look(const FInputActionValue& Value);
 
-    //void PlaceTrap();
+    void PlaceTrap();
+
+    void TrapRotate();
+
+    void TrapSlotChange();
+
+    void Cancel();
 
     //アイテム使用関数
     void UseHeldItem();
+
+#pragma endregion InputFunction
 
     //追加コンポーネントまとめ
 #pragma region Component
@@ -102,7 +113,7 @@ private:
 #pragma endregion Component
 
     //プレイヤーIputActionまとめ
-#pragma region Input
+#pragma region InputAction
 
     //インプットアクションコンポーネント
     UPROPERTY(EditAnywhere, Category = "Input")
@@ -135,7 +146,16 @@ private:
     //キャンセルアクション
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* CancelAction;
-#pragma endregion Input
+
+    //トラップスロット右アクション
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* RightTrapSlotAction;
+
+    //トラップスロット左アクション
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* LeftTrapSlotAction;
+
+#pragma endregion InputAction
 
     //キャラクターのステータス設定
 #pragma region CharacterSetting
@@ -156,19 +176,31 @@ private:
     //カメラの移動スピード
     UPROPERTY(EditAnywhere, Category = "Camera")
     float CameraSpeed = 0;
+    
+    //プレイヤーの状態リセット
+    EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
 
 #pragma endregion CharacterSetting
+
+    UTrapPlacementCompoent* TrapPlacement;
 
     //アニメーション
     UPROPERTY()
     TObjectPtr<UAnimSequence>CurrentAnim;
 
-    //プレイヤーの状態リセット
-    EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
-
     //初期位置(リスポーン位置)
     FTransform StartTransform;
 
+<<<<<<< HEAD
     
 
+=======
+    UPROPERTY(EditAnywhere, Category = "Trap")
+    TArray  <TObjectPtr<UTrapBase* >>TrapList;
+
+    UPROPERTY(VisibleAnywhere)
+    UTrapBase* SelectedTrap;
+
+    int32 PlayerIndex = INDEX_NONE;
+>>>>>>> b05c6a3259abcf7bfe895e3ab32473934814bd7e
 };
