@@ -68,10 +68,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Player")
     void RespawnAtStart();
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+  
 private:	
 
     //キャラ移動関数
@@ -166,5 +168,7 @@ private:
 
     //初期位置(リスポーン位置)
     FTransform StartTransform;
+
+    
 
 };

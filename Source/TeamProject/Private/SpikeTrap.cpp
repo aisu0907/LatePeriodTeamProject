@@ -11,7 +11,7 @@ ASpikeTrap::ASpikeTrap()
 	TriggerBox->SetBoxExtent(FVector(100.f, 100.f, 50.f));
 	SetupTriggerVolume(TriggerBox);	//e‚ÌBeginPlay‚ÅOverla@‚ª“o˜^‚³‚ê‚é
 
-	ActivationDelay = 0.5f;//“¥‚ñ‚Å‚©‚ç9.5•bŒã‚É‚Æ‚°‚ªo‚é
+	ActivationDelay = 0.5f;//“¥‚ñ‚Å‚©‚ç0.5•bŒã‚É‚Æ‚°‚ªo‚é
 	CooldownTime = 3.f;
 }
 

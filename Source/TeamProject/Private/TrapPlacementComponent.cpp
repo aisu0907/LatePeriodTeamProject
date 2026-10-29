@@ -91,3 +91,5 @@ void UTrapPlacementComponent::UpdateTarget()
         TargetZone = Zone;
     }
 }
+
+

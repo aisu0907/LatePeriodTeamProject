@@ -8,11 +8,15 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
+#include "TimerManager.h"
+
 //アイテム
 #include "PickUpItem.h"
 
 //アニメーション
 #include"Animation/AnimSequence.h"
+
+
 
 using enum EAdvennturerState;
 
@@ -71,6 +75,11 @@ void AAdventurerCharacter::BeginPlay()
 void AAdventurerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//死亡中はアニメを切り替えない
+	if (AdvennturerState == Inoperable)
+		return;
+
 
 	//アニメーション
 	UAnimSequence* Next = IdleAnim;
