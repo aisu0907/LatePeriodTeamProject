@@ -12,7 +12,7 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 class UTrapPlacementCompoent; //トラップ設置Comp
-class UTrapBase; //トラップベース
+class ATrapBase; //トラップベース
 class APickUpItem; //アイテム
 class UAnimSequence; //アニメーション
 
@@ -177,6 +177,8 @@ private:
     UPROPERTY(EditAnywhere, Category = "Camera")
     float CameraSpeed = 0;
     
+    //プレイヤーのトラップ設置上限
+
     //プレイヤーの状態リセット
     EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
 
@@ -192,10 +194,10 @@ private:
     FTransform StartTransform;
 
     UPROPERTY(EditAnywhere, Category = "Trap")
-    TArray  <TObjectPtr<UTrapBase* >>TrapList;
+    TArray  <TObjectPtr<ATrapBase>>TrapList;
 
     UPROPERTY(VisibleAnywhere)
-    UTrapBase* SelectedTrap;
+    ATrapBase* SelectedTrap;
 
     int32 PlayerIndex = INDEX_NONE;
 };

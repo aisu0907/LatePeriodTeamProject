@@ -96,4 +96,7 @@ void UTrapPlacementComponent::UpdateTarget()
     }
 }
 
+void UTrapPlacementComponent::PlaceTrap()
+{
 
+}
