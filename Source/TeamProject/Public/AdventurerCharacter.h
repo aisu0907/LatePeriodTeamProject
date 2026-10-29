@@ -11,11 +11,11 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
-class UTrapPlacementCompoent; //トラップ設置Comp
+class UTrapPlacementComponent; //トラップ設置Comp
 class ATrapBase; //トラップベース
 class APickUpItem; //アイテム
 class UAnimSequence; //アニメーション
-
+class AGamePlayModeBase;
 
 //プレイヤーの状態管理用
 UENUM(BlueprintType)
@@ -74,6 +74,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+        bool bFromSweep, const FHitResult& SweepResult);
 
   
 private:	
@@ -190,7 +194,11 @@ private:
 
 #pragma endregion CharacterSetting
 
-    UTrapPlacementCompoent* TrapPlacement;
+    UPROPERTY()
+    UTrapPlacementComponent* TrapPlacement;
+
+    UPROPERTY()
+    AGamePlayModeBase* GamePlayMode;
 
     //アニメーション
     UPROPERTY()
@@ -200,7 +208,7 @@ private:
     FTransform StartTransform;
 
     UPROPERTY(EditAnywhere, Category = "Trap")
-    TArray  <TObjectPtr<ATrapBase>>TrapList;
+    TArray  <TSubclassOf<ATrapBase>>TrapList;
 
     UPROPERTY(VisibleAnywhere)
     ATrapBase* SelectedTrap;

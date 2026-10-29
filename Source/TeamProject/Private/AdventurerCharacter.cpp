@@ -5,11 +5,12 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-
+#include "Goal.h"
 #include "TimerManager.h"
-
+#include "GamePlayModeBase.h"
 //アイテム
 #include "PickUpItem.h"
 
@@ -55,6 +56,10 @@ void AAdventurerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(
+		this, &AAdventurerCharacter::OnOverlapBegin);
+
 	//初期位置を保存
 	StartTransform = GetActorTransform();
 
@@ -117,6 +122,23 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		//アイテム
 		EIC->BindAction(UseAction, ETriggerEvent::Started, this, &AAdventurerCharacter::UseHeldItem);
 	}
+}
+
+
+void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+	bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (AdvennturerState == TrapMode)
+		return;
+
+	//ゴールの時
+	if (AGoal* Goal = Cast<AGoal>(OtherActor))
+	{
+		GamePlayMode->RoundWin(this);
+	}
+
+
 }
 
 //移動関数
