@@ -191,10 +191,6 @@ private:
     //初期位置(リスポーン位置)
     FTransform StartTransform;
 
-<<<<<<< HEAD
-    
-
-=======
     UPROPERTY(EditAnywhere, Category = "Trap")
     TArray  <TObjectPtr<UTrapBase* >>TrapList;
 
@@ -202,5 +198,4 @@ private:
     UTrapBase* SelectedTrap;
 
     int32 PlayerIndex = INDEX_NONE;
->>>>>>> b05c6a3259abcf7bfe895e3ab32473934814bd7e
 };
