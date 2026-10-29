@@ -33,7 +33,6 @@ void AGamePlayModeBase::RoundWin(AAdventurerCharacter* Player)
     {
         if (PlayerWin[i] >= VictoryConditions)
         {
-            UE_LOG(LogTemp, Warning, TEXT("Hello"));
             Result();
         }
     }
