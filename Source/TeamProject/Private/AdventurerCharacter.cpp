@@ -56,7 +56,11 @@ void AAdventurerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//
+	UE_LOG(LogTemp, Warning, TEXT("BeginPlay: bind overlap"));
+
+	GamePlayMode = GetWorld()->GetAuthGameMode<AGamePlayModeBase>();
+
+	//Overlapを登録
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(
 		this, &AAdventurerCharacter::OnOverlapBegin);
 
@@ -96,6 +100,7 @@ void AAdventurerCharacter::Tick(float DeltaTime)
 	{
 		Next = WalkAnim;
 	}
+
 	//変わった時だけ再生しなおす(舞フレーム呼ぶと最初で止まる)
 	if (Next && Next != CurrentAnim)
 	{
@@ -124,14 +129,27 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	}
 }
 
+void AAdventurerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (APlayerController* PC = Cast<APlayerController>(NewController))
+	{
+		// ローカルプレイヤーのインデックス(0, 1, ...)を取得
+		if (const ULocalPlayer* LP = PC->GetLocalPlayer())
+		{
+			PlayerIndex = LP->GetLocalPlayerIndex();
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("PlayerIndex = %d"), PlayerIndex);
+}
 
 void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (AdvennturerState == TrapMode)
-		return;
-
+	if (AdvennturerState == TrapMode) { return; }
 	//ゴールの時
 	if (AGoal* Goal = Cast<AGoal>(OtherActor))
 	{
@@ -141,7 +159,7 @@ void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, A
 
 }
 
-//移動関数
+//キャラ移動関数
 void AAdventurerCharacter::Move(const FInputActionValue& Value)
 {
 	if (AdvennturerState == Inoperable)
@@ -157,6 +175,7 @@ void AAdventurerCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(Right, Input.X);
 }
 
+//視点操作関数
 void AAdventurerCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D Input = Value.Get<FVector2D>();
@@ -164,18 +183,31 @@ void AAdventurerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(-Input.Y);
 }
 
+//トラップ設置操作関数
 void AAdventurerCharacter::PlaceTrap()
 {
-	if (AdvennturerState != TrapMode)
-		return;
+	if (AdvennturerState != TrapMode) { return; }
+
+	if (TrapPlaceCount < TrapPlaceMax)
+	{
+		++TrapPlaceCount;
+
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Max Trap"));
+	}
+
 }
 
+//トラップ回転操作関数
 void AAdventurerCharacter::TrapRotate()
 {
 	if (AdvennturerState != TrapMode)
 		return;
 }
 
+//トラップスロット操作関数
 void AAdventurerCharacter::TrapSlotChange()
 {
 	if (AdvennturerState != TrapMode)
@@ -191,6 +223,18 @@ void AAdventurerCharacter::UseHeldItem()
 		HeldItem = nullptr;//一回きり
 	}
 }
+
+//プレイヤーリセット関数
+void AAdventurerCharacter::PlayerReset()
+{
+	UE_LOG(LogTemp, Warning, TEXT("PlayerReset"));
+
+	AdvennturerState = TrapMode; //トラップ設置モードに
+	TrapPlaceCount = 0; //トラップ設置数リセット
+	SetActorTransform(StartTransform); //位置を初期位置にリセット
+	MoveSetting->StopMovementImmediately(); //速度・加速度を0に
+}
+
 
 //リスポーン
 void AAdventurerCharacter::RespawnAtStart()

@@ -16,6 +16,15 @@ enum class EPlayerIndex : uint8
 	Player2,
 };
 
+//フェーズ管理用
+UENUM(BlueprintType)
+enum class EGamePhase : uint8
+{
+	Trap,
+	Play,
+	GameEnd,
+};
+
 UCLASS()
 class TEAMPROJECT_API AGamePlayModeBase : public AGameModeBase
 {
@@ -25,13 +34,20 @@ public:
 
 	AGamePlayModeBase();
 
-	void RoundWin(AAdventurerCharacter* Player);
 
 	void BeginPlay() override; 
 
+	// Called every frame
+	void Tick(float DeltaTime) override;
+
+	void RoundWin(AAdventurerCharacter* Player);
 private:
 
 	void Result();
+
+	void RoundReset();
+
+	EGamePhase GamePhase = EGamePhase::Trap;
 
 	UPROPERTY( EditAnywhere, Category = "PlayerWin")
 	int32 VictoryConditions = 3;

@@ -96,7 +96,21 @@ void UTrapPlacementComponent::UpdateTarget()
     }
 }
 
-void UTrapPlacementComponent::PlaceTrap()
+bool UTrapPlacementComponent::PlaceTrap(TSubclassOf<ATrapBase> TrapBP)
 {
+    //トラップが置けるかどうかの確認・nullチェック
+    if (!bHasValidTarget || !TargetZone.IsValid() || !TrapBP) { return false; }
 
+    FActorSpawnParameters Params;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+    const FTransform SpawnTransform(TargetZone->GetActorQuat(), TargetLocation);
+
+    ATrapBase* Trap = GetWorld()->SpawnActor<ATrapBase>(TrapBP, SpawnTransform, Params);
+
+    //トラップ設置チェック
+    if (!Trap) { return false; }
+
+    //TargetZone->RegisterTrap(TargetCell, Cast<ATrapBase>(Trap));
+    return true;
 }

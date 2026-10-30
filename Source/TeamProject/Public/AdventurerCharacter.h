@@ -26,7 +26,6 @@ enum class EAdvennturerState : uint8
     Inoperable,
 };
 
-
 UCLASS()
 class TEAMPROJECT_API AAdventurerCharacter : public ACharacter
 {
@@ -70,11 +69,15 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Player")
     void RespawnAtStart();
 
-
+    UFUNCTION(BlueprintCallable, Category = "Player")
+    void PlayerReset();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+    virtual void PossessedBy(AController* NewController) override;
+
+    UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
         bool bFromSweep, const FHitResult& SweepResult);
@@ -83,20 +86,32 @@ protected:
 private:	
 
 #pragma region InputFunction
+
     //キャラ移動関数
+    UFUNCTION()
     void Move(const FInputActionValue& Value);
-    //カメラ操作関数
+
+    //視点操作関数
+    UFUNCTION()
     void Look(const FInputActionValue& Value);
 
+    //トラップ設置操作関数
+    UFUNCTION()
     void PlaceTrap();
 
+    //トラップ回転操作関数
+    UFUNCTION()
     void TrapRotate();
 
+    //トラップスロット操作関数
+    UFUNCTION()
     void TrapSlotChange();
 
+    UFUNCTION()
     void Cancel();
 
     //アイテム使用関数
+    UFUNCTION()
     void UseHeldItem();
 
 #pragma endregion InputFunction
@@ -185,20 +200,23 @@ private:
     UPROPERTY(EditAnywhere, Category = "Trap")
     int32 TrapPlaceMax = 5;
 
-    //プレイヤーのトラップ設置上限
+    //プレイヤーのトラップ設置回数
     UPROPERTY(EditAnywhere, Category = "Trap")
     int32 TrapPlaceCount = 0;
 
     //プレイヤーの状態リセット
+    UPROPERTY(EditAnywhere, Category = "Character")
     EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
 
+    
 #pragma endregion CharacterSetting
 
     UPROPERTY()
     UTrapPlacementComponent* TrapPlacement;
 
+    //ゲームモードクラス
     UPROPERTY()
-    AGamePlayModeBase* GamePlayMode;
+    AGamePlayModeBase* GamePlayMode; 
 
     //アニメーション
     UPROPERTY()
@@ -211,7 +229,8 @@ private:
     TArray  <TSubclassOf<ATrapBase>>TrapList;
 
     UPROPERTY(VisibleAnywhere)
-    ATrapBase* SelectedTrap;
+    TSubclassOf<ATrapBase> SelectedTrap;
 
+    UPROPERTY(VisibleAnywhere)
     int32 PlayerIndex = INDEX_NONE;
 };
