@@ -225,12 +225,6 @@ private:
     //初期位置(リスポーン位置)
     FTransform StartTransform;
 
-    UPROPERTY(EditAnywhere, Category = "Trap")
-    TArray  <TSubclassOf<ATrapBase>>TrapList;
-
-    UPROPERTY(VisibleAnywhere)
-    TSubclassOf<ATrapBase> SelectTrap;
-
     UPROPERTY(VisibleAnywhere)
     int32 PlayerIndex = INDEX_NONE;
 };

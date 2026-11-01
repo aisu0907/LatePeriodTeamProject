@@ -52,6 +52,9 @@ AAdventurerCharacter::AAdventurerCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	//カメラ設定
 	FollowCamera->bUsePawnControlRotation = false;
+
+	//TrapPlacementコンポーネント
+	TrapPlacement = CreateDefaultSubobject<UTrapPlacementComponent>(TEXT("TrapPlacementComp"));
 }
 
 // Called when the game starts or when spawned
@@ -73,6 +76,7 @@ void AAdventurerCharacter::BeginPlay()
 	//プレイヤー・カメラのステータス設定
 	CameraBoom->TargetArmLength = DefaultArmLength;
 	MoveSetting->AirControl = AirControllPower;
+
 }
 
 // Called every frame
@@ -196,11 +200,8 @@ void AAdventurerCharacter::PlaceTrap()
 		return;
 	}
 
-	// トラップが未選択なら何もしない
-	if (!SelectTrap) { return; }
-
 	// 設置に成功したときだけカウントを増やす
-	if (TrapPlacement && TrapPlacement->PlaceTrap(SelectTrap))
+	if (TrapPlacement && TrapPlacement->PlaceTrap())
 	{
 		++TrapPlaceCount;
 	}

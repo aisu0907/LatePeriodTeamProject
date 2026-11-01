@@ -7,9 +7,10 @@
 #include "TrapPlacementComponent.generated.h"
 
 class ATrapPlacementZone;
+class ATrapBase;
 class AAdventurerCharacter;
 
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TEAMPROJECT_API UTrapPlacementComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -22,32 +23,49 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction) override;
 
+	// 設置出来るトラップを入れる用
+	UPROPERTY(EditAnywhere, Category = "Trap")
+	TArray  <TSubclassOf<ATrapBase>> TrapList;
+
+	// 選択してるトラップの番号
+	UPROPERTY(VisibleAnywhere, Category = "Trap")
+	int32 SelectedIndex = 0;
+
+	// 選択中のインデックスを変更
+	UFUNCTION(BlueprintCallable, Category = "Trap")
+	void SelectTrapIndex(int32 NewIndex);
+
 	// 入力アクションから呼ぶ
 	UFUNCTION(BlueprintCallable, Category = "Trap")
-	bool PlaceTrap(TSubclassOf<ATrapBase> TrapBP);
-
-	// 床ゾーンに置くトラップ
-	UPROPERTY(EditAnywhere, Category = "Trap")
-	TSubclassOf<AActor> FloorTrapClass;
-
-	// 壁ゾーンに置くトラップ
-	UPROPERTY(EditAnywhere, Category = "Trap")
-	TSubclassOf<AActor> WallTrapClass;
+	bool PlaceTrap();
 
 	// 視線トレースの長さ(cm)
 	UPROPERTY(EditAnywhere, Category = "Trap")
 	float TraceDistance = 1500.f;
 
+protected:
+
+	virtual void BeginPlay() override;
+
 private:
 
 	void UpdateTarget();
 
-	TSubclassOf<AActor> GetTrapClassFor(const ATrapPlacementZone* Zone) const;
+	UPROPERTY()
+	TObjectPtr<AAdventurerCharacter> PlayerChara;
+
+	// 選択したトラップ取り出し用
+	TSubclassOf<ATrapBase> GetSelectedTrapClass() const;
+
+
+
 
 	bool bHasValidTarget = false;
-	FVector TargetLocation = FVector::ZeroVector;
-	FIntPoint TargetCell = FIntPoint::ZeroValue;
-	TWeakObjectPtr<ATrapPlacementZone> TargetZone;
 
-	AAdventurerCharacter* PlayerChara;
+	FVector TargetLocation = FVector::ZeroVector;
+
+	FIntPoint TargetCell = FIntPoint::ZeroValue;
+
+	TWeakObjectPtr<ATrapPlacementZone> TargetZone;
+	
 };

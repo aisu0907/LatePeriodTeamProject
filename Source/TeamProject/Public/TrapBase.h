@@ -4,10 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "TrapPlacementZone.h" 
 #include "TrapBase.generated.h"
 
 class UShapeComponent;
 class UStaticMeshComponent;
+
+UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class EPlaceableSurface : uint8
+{
+	None = 0      UMETA(Hidden),
+	Floor = 1 << 0,
+	Wall = 1 << 1
+};
 
 //トラップの状態管理用
 UENUM(BlueprintType)
@@ -35,6 +44,20 @@ public:
 	//外部からのトラップの状態参照
 	UFUNCTION(BlueprintPure, Category = "Trap")
 	ETrapState GetTrapState() const { return TrapState; }
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap",
+		meta = (Bitmask, BitmaskEnum = "/Script/TeamProject.EPlaceableSurface"))
+	int32 PlaceableSurfaces = static_cast<int32>(EPlaceableSurface::Floor); 
+
+	//トラップの設置の種類判定用
+	bool CanPlaceOn(EPlacementSurface Surface) const
+	{
+		//立っていビットの数でトラップの種類を判定する
+		const int32 Bit = (Surface == EPlacementSurface::Floor)
+			? static_cast<int32>(EPlaceableSurface::Floor)
+			: static_cast<int32>(EPlaceableSurface::Wall);
+		return (PlaceableSurfaces & Bit) != 0;
+	}
 
 protected:
 	// Called when the game starts or when spawned
