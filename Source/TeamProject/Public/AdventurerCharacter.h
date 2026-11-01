@@ -201,22 +201,22 @@ private:
     int32 TrapPlaceMax = 5;
 
     //プレイヤーのトラップ設置回数
-    UPROPERTY(EditAnywhere, Category = "Trap")
+    UPROPERTY(VisibleAnywhere, Category = "Trap")
     int32 TrapPlaceCount = 0;
 
     //プレイヤーの状態リセット
     UPROPERTY(EditAnywhere, Category = "Character")
-    EAdvennturerState AdvennturerState = EAdvennturerState::PlayMode;
+    EAdvennturerState AdvennturerState = EAdvennturerState::TrapMode;
 
     
 #pragma endregion CharacterSetting
 
     UPROPERTY()
-    UTrapPlacementComponent* TrapPlacement;
+    TObjectPtr<UTrapPlacementComponent> TrapPlacement;
 
     //ゲームモードクラス
     UPROPERTY()
-    AGamePlayModeBase* GamePlayMode; 
+    TObjectPtr<AGamePlayModeBase> GamePlayMode; 
 
     //アニメーション
     UPROPERTY()
@@ -229,7 +229,7 @@ private:
     TArray  <TSubclassOf<ATrapBase>>TrapList;
 
     UPROPERTY(VisibleAnywhere)
-    TSubclassOf<ATrapBase> SelectedTrap;
+    TSubclassOf<ATrapBase> SelectTrap;
 
     UPROPERTY(VisibleAnywhere)
     int32 PlayerIndex = INDEX_NONE;

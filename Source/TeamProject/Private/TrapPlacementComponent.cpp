@@ -8,6 +8,7 @@
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
 #include "AdventurerCharacter.h"
+#include "TrapBase.h"
 
 // Sets default values
 UTrapPlacementComponent::UTrapPlacementComponent()
@@ -111,6 +112,6 @@ bool UTrapPlacementComponent::PlaceTrap(TSubclassOf<ATrapBase> TrapBP)
     //トラップ設置チェック
     if (!Trap) { return false; }
 
-    //TargetZone->RegisterTrap(TargetCell, Cast<ATrapBase>(Trap));
+    TargetZone->RegisterTrap(TargetCell, Trap);
     return true;
 }

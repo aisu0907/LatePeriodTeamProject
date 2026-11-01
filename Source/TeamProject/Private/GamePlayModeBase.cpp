@@ -16,10 +16,11 @@ void AGamePlayModeBase::BeginPlay()
 {
     Super::BeginPlay();
 
-
-    // プレイヤー0は自動生成されるので、2人目を作る
-    // 第2引数のbSpawnPlayerController = true でPawnも生成される
-    UGameplayStatics::CreatePlayer(this, 1, true);
+    if (UGameplayStatics::GetPlayerController(this, 1) == nullptr)
+    {
+        //プレイヤー2を作成
+        UGameplayStatics::CreatePlayer(this, 1, true);
+    }
 }
 
 void AGamePlayModeBase::Tick(float DeltaTime)

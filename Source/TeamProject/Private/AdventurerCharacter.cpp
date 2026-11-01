@@ -8,11 +8,14 @@
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Goal.h"
 #include "TimerManager.h"
+
+//クラス
+#include "PickUpItem.h" //アイテム
+#include "TrapPlacementComponent.h"
 #include "GamePlayModeBase.h"
-//アイテム
-#include "PickUpItem.h"
+#include "Goal.h"
+#include "TrapBase.h"
 
 //アニメーション
 #include"Animation/AnimSequence.h"
@@ -70,14 +73,6 @@ void AAdventurerCharacter::BeginPlay()
 	//プレイヤー・カメラのステータス設定
 	CameraBoom->TargetArmLength = DefaultArmLength;
 	MoveSetting->AirControl = AirControllPower;
-
-	if (APlayerController* PC = Cast<APlayerController>(GetController()))
-	{
-		if (auto* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 }
 
 // Called every frame
@@ -139,6 +134,12 @@ void AAdventurerCharacter::PossessedBy(AController* NewController)
 		if (const ULocalPlayer* LP = PC->GetLocalPlayer())
 		{
 			PlayerIndex = LP->GetLocalPlayerIndex();
+
+			if (auto* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+			{
+				Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			}
+
 		}
 	}
 
@@ -180,7 +181,7 @@ void AAdventurerCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D Input = Value.Get<FVector2D>();
 	AddControllerYawInput(Input.X);
-	AddControllerPitchInput(-Input.Y);
+	AddControllerPitchInput(Input.Y);
 }
 
 //トラップ設置操作関数
@@ -188,14 +189,20 @@ void AAdventurerCharacter::PlaceTrap()
 {
 	if (AdvennturerState != TrapMode) { return; }
 
-	if (TrapPlaceCount < TrapPlaceMax)
-	{
-		++TrapPlaceCount;
-
-	}
-	else
+	// 設置数の上限チェック(最大未満のときだけ置ける)
+	if (TrapPlaceCount >= TrapPlaceMax)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Max Trap"));
+		return;
+	}
+
+	// トラップが未選択なら何もしない
+	if (!SelectTrap) { return; }
+
+	// 設置に成功したときだけカウントを増やす
+	if (TrapPlacement && TrapPlacement->PlaceTrap(SelectTrap))
+	{
+		++TrapPlaceCount;
 	}
 
 }
@@ -223,6 +230,12 @@ void AAdventurerCharacter::UseHeldItem()
 		HeldItem = nullptr;//一回きり
 	}
 }
+
+void AAdventurerCharacter::Cancel()
+{
+
+}
+
 
 //プレイヤーリセット関数
 void AAdventurerCharacter::PlayerReset()

@@ -8,7 +8,6 @@
 
 class ATrapPlacementZone;
 class AAdventurerCharacter;
-class ATrapBase;
 
 UCLASS()
 class TEAMPROJECT_API UTrapPlacementComponent : public UActorComponent
