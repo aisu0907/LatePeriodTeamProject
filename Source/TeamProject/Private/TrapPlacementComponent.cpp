@@ -59,7 +59,7 @@ void UTrapPlacementComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    if (!PlayerChara || PlayerChara->GetAdvennturerState() != EAdvennturerState::TrapMode)
+    if (!PlayerChara || PlayerChara->GetAdventurerState() != EAdventurerState::TrapMode)
     {
         UE_LOG(LogTemp, Warning, TEXT("Trap: PlayerChara is null"));
         return;

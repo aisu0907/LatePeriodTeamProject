@@ -22,7 +22,7 @@
 
 
 
-using enum EAdvennturerState;
+using enum EAdventurerState;
 
 // Sets default values
 AAdventurerCharacter::AAdventurerCharacter()
@@ -85,7 +85,7 @@ void AAdventurerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//死亡中はアニメを切り替えない
-	if (AdvennturerState == Inoperable)
+	if (AdventurerState == Inoperable)
 		return;
 
 
@@ -154,7 +154,7 @@ void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, A
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (AdvennturerState != TrapMode) { return; }
+	if (AdventurerState != PlayMode) { return; }
 
 	//ゴールの時
 	if (AGoal* Goal = Cast<AGoal>(OtherActor))
@@ -172,7 +172,7 @@ void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, A
 //キャラ移動関数
 void AAdventurerCharacter::Move(const FInputActionValue& Value)
 {
-	if (AdvennturerState == Inoperable)
+	if (AdventurerState == Inoperable)
 		return;
 
 	const FVector2D Input = Value.Get<FVector2D>();
@@ -196,7 +196,7 @@ void AAdventurerCharacter::Look(const FInputActionValue& Value)
 //トラップ設置操作関数
 void AAdventurerCharacter::PlaceTrap()
 {
-	if (AdvennturerState != TrapMode) { return; }
+	if (AdventurerState != TrapMode) { return; }
 
 	// 設置数の上限チェック(最大未満のときだけ置ける)
 	if (TrapPlaceCount >= TrapPlaceMax)
@@ -216,14 +216,14 @@ void AAdventurerCharacter::PlaceTrap()
 //トラップ回転操作関数
 void AAdventurerCharacter::TrapRotate()
 {
-	if (AdvennturerState != TrapMode)
+	if (AdventurerState != TrapMode)
 		return;
 }
 
 //トラップスロット操作関数
 void AAdventurerCharacter::TrapSlotChange()
 {
-	if (AdvennturerState != TrapMode)
+	if (AdventurerState != TrapMode)
 		return;
 }
 
@@ -244,16 +244,23 @@ void AAdventurerCharacter::Cancel()
 
 
 //プレイヤーリセット関数
-void AAdventurerCharacter::PlayerReset()
+void AAdventurerCharacter::PlayerReset(EAdventurerState NewState)
 {
 	UE_LOG(LogTemp, Warning, TEXT("PlayerReset"));
 
-	AdvennturerState = TrapMode; //トラップ設置モードに
+	ChangeState(NewState);
 	TrapPlaceCount = 0; //トラップ設置数リセット
 	SetActorTransform(StartTransform); //位置を初期位置にリセット
 	MoveSetting->StopMovementImmediately(); //速度・加速度を0に
 }
 
+void AAdventurerCharacter::ChangeState(EAdventurerState NewState)
+{
+	if (AdventurerState == NewState)
+		return;
+
+	AdventurerState = NewState; //トラップ設置モードに
+}
 
 //リスポーン
 void AAdventurerCharacter::RespawnAtStart()

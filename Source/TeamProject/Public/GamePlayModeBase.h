@@ -7,6 +7,7 @@
 #include "GamePlayModeBase.generated.h"
 
 class AAdventurerCharacter;
+enum class EAdventurerState : uint8;
 
 //プレイヤーIndex
 UENUM(BlueprintType)
@@ -22,7 +23,7 @@ enum class EGamePhase : uint8
 {
 	Trap,
 	Play,
-	GameEnd,
+	Result,
 };
 
 UCLASS()
@@ -34,6 +35,8 @@ public:
 
 	AGamePlayModeBase();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Phase")
+	float TrapPhaseTime = 30.f;
 
 	void BeginPlay() override; 
 
@@ -41,13 +44,19 @@ public:
 	void Tick(float DeltaTime) override;
 
 	void RoundWin(AAdventurerCharacter* Player);
+
+	// Trap フェーズの残り秒数
+	UFUNCTION(BlueprintPure, Category = "Phase")
+	float GetTrapRemainingTime() const;
 private:
 
 	void Result();
 
-	void RoundReset();
+	void RoundReset(EAdventurerState NewState);
 
 	void TrapPhaseEnd();
+
+	void SetPhase(EGamePhase NewPhase);
 
 	EGamePhase GamePhase = EGamePhase::Trap;
 

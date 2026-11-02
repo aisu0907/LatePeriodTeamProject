@@ -19,7 +19,7 @@ class AGamePlayModeBase;
 
 //プレイヤーの状態管理用
 UENUM(BlueprintType)
-enum class EAdvennturerState : uint8
+enum class EAdventurerState : uint8
 {
     PlayMode,
     TrapMode,
@@ -37,7 +37,7 @@ public:
 
     //外部からのプレイヤーの状態参照
     UFUNCTION(BlueprintPure, Category = "Player")
-    EAdvennturerState GetAdvennturerState() const { return AdvennturerState; }
+    EAdventurerState GetAdventurerState() const { return AdventurerState; }
 
     UFUNCTION(BlueprintPure, Category = "Player")
     int32 GetPlayerIndex() const { return PlayerIndex; }
@@ -70,7 +70,10 @@ public:
     void RespawnAtStart();
 
     UFUNCTION(BlueprintCallable, Category = "Player")
-    void PlayerReset();
+    void PlayerReset(EAdventurerState NewState);
+
+    UFUNCTION(BlueprintCallable, Category = "Player")
+    void ChangeState(EAdventurerState NewState);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -206,7 +209,7 @@ private:
 
     //プレイヤーの状態リセット
     UPROPERTY(EditAnywhere, Category = "Character")
-    EAdvennturerState AdvennturerState = EAdvennturerState::TrapMode;
+    EAdventurerState AdventurerState = EAdventurerState::TrapMode;
 
     
 #pragma endregion CharacterSetting
