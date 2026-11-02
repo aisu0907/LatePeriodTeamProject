@@ -29,6 +29,11 @@ void AGamePlayModeBase::Tick(float DeltaTime)
         return;
 }
 
+void AGamePlayModeBase::TrapPhaseEnd()
+{
+
+}
+
 //ラウンド勝敗判定
 void AGamePlayModeBase::RoundWin(AAdventurerCharacter* Player)
 {
@@ -76,7 +81,7 @@ void AGamePlayModeBase::RoundReset()
         if (AAdventurerCharacter* Adventurer = Cast<AAdventurerCharacter>(PC->GetPawn()))
         {
             UE_LOG(LogTemp, Warning, TEXT("RoundReset"));
-            //プレイヤーの
+            //プレイヤーの情報リセット
             Adventurer->PlayerReset();
         }
     }

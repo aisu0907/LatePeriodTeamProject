@@ -47,11 +47,18 @@ private:
 
 	void RoundReset();
 
+	void TrapPhaseEnd();
+
 	EGamePhase GamePhase = EGamePhase::Trap;
 
 	UPROPERTY( EditAnywhere, Category = "PlayerWin")
 	int32 VictoryConditions = 3;
 
+	//プレイヤーの勝利数
 	UPROPERTY(VisibleAnywhere, Category = "PlayerWin")
 	TArray<int32> PlayerWin;
+
+	//トラップフェーズタイマー
+	UPROPERTY()
+	FTimerHandle TrapPhaseTimerHandle;
 };
