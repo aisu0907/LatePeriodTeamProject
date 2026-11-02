@@ -18,6 +18,9 @@ public:
 	// Sets default values for this actor's properties
 	AGoal();
 
+	UPROPERTY(EditAnywhere, Category = "Goal")
+	int32 IgnorePlayerIndex = 0;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,8 +36,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> GoalMesh;
 
-
 	//ƒRƒŠƒWƒ‡ƒ“
 	UPROPERTY(EditAnywhere, Category = "Components")
 	TObjectPtr<UBoxComponent> GoalCollision;
+
 };

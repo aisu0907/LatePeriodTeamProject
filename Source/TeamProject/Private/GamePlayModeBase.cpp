@@ -32,14 +32,17 @@ void AGamePlayModeBase::Tick(float DeltaTime)
 //ラウンド勝敗判定
 void AGamePlayModeBase::RoundWin(AAdventurerCharacter* Player)
 {
+    //プレイヤーの番号を取得
     int32 Index = Player->GetPlayerIndex();
 
+    //範囲外なら
     if (Index < 0)
         return;
 
+    //プレイヤーの勝利数を上げる
     PlayerWin[Index]++;
 
-
+    //プレイヤーの勝利数がクリア可能だったら
     if (PlayerWin[Index] >= VictoryConditions)
     {
         UE_LOG(LogTemp, Warning, TEXT("Hello"));
@@ -51,11 +54,13 @@ void AGamePlayModeBase::RoundWin(AAdventurerCharacter* Player)
     }
 }
 
+//クリア処理
 void AGamePlayModeBase::Result()
 {
     
 }
 
+//ラウンドリセット用
 void AGamePlayModeBase::RoundReset()
 {
     UE_LOG(LogTemp, Warning, TEXT("RoundReset"));
@@ -71,6 +76,7 @@ void AGamePlayModeBase::RoundReset()
         if (AAdventurerCharacter* Adventurer = Cast<AAdventurerCharacter>(PC->GetPawn()))
         {
             UE_LOG(LogTemp, Warning, TEXT("RoundReset"));
+            //プレイヤーの
             Adventurer->PlayerReset();
         }
     }

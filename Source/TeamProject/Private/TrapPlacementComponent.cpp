@@ -104,14 +104,14 @@ void UTrapPlacementComponent::UpdateTarget()
     //トレース・ECC_Placementに当たらなかった
     if (!GetWorld()->LineTraceSingleByChannel(Hit, CamLoc, End, ECC_Placement, Params))
     {
-        UE_LOG(LogTemp, Warning, TEXT("Trap: no hit"));
+        //UE_LOG(LogTemp, Warning, TEXT("Trap: no hit"));
         return;
     }
 
     ATrapPlacementZone* Zone = Cast<ATrapPlacementZone>(Hit.GetActor());
     
     //当たったオブジェクトがZoneじゃなかったら
-    if (!Zone) { UE_LOG(LogTemp, Warning, TEXT("Trap: not zone")); return; }
+    if (!Zone) { return; }
 
     // 板の表面(ローカルZ+側)から当たったときだけ有効(裏面は弾く)
     if (FVector::DotProduct(Hit.ImpactNormal, Zone->GetActorUpVector()) < 0.5f)
@@ -121,7 +121,7 @@ void UTrapPlacementComponent::UpdateTarget()
 
     // この面に置けるトラップが未設定ならプレビューも出さない
     const TSubclassOf<ATrapBase> SelectedClass = GetSelectedTrapClass();
-    if (!SelectedClass) { UE_LOG(LogTemp, Warning, TEXT("Trap: TrapList empty")); return; }
+    if (!SelectedClass) { return; }
 
 
     //スナップと空き確認
@@ -144,6 +144,19 @@ bool UTrapPlacementComponent::PlaceTrap()
     Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
     const FTransform SpawnTransform(TargetZone->GetActorQuat(), TargetLocation);
+
+    const float Half = TargetZone->CellSize * 0.5f;
+    const FVector Center = TargetLocation + TargetZone->GetActorUpVector() * Half;
+
+    FCollisionShape Box = FCollisionShape::MakeBox(FVector(Half));
+    FCollisionQueryParams QParams(SCENE_QUERY_STAT(TrapOverlap), false);
+
+    //設置位置にプレイヤーがいないかの確認
+    if (GetWorld()->OverlapAnyTestByChannel(
+        Center, TargetZone->GetActorQuat(), ECC_Pawn, Box, QParams))
+    {
+        return false; // 誰かが重なっているので置けない
+    }
 
     ATrapBase* Trap = GetWorld()->SpawnActor<ATrapBase>(ClassToSpawn, SpawnTransform, Params);
 

@@ -158,6 +158,10 @@ void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, A
 	//ƒS[ƒ‹‚Ì
 	if (AGoal* Goal = Cast<AGoal>(OtherActor))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Goal"));
+
+		if(Goal->IgnorePlayerIndex != PlayerIndex)
+
 		GamePlayMode->RoundWin(this);
 	}
 
