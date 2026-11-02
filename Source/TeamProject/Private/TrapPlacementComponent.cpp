@@ -99,7 +99,7 @@ void UTrapPlacementComponent::UpdateTarget()
     FCollisionQueryParams Params(SCENE_QUERY_STAT(TrapPlacement), false, GetOwner());
     const FVector End = CamLoc + CamRot.Vector() * TraceDistance;
 
-    DrawDebugLine(GetWorld(), CamLoc, End, FColor::Red, false, 0.f, 0, 2.f);
+    //DrawDebugLine(GetWorld(), CamLoc, End, FColor::Red, false, 0.f, 0, 2.f);
 
     //トレース・ECC_Placementに当たらなかった
     if (!GetWorld()->LineTraceSingleByChannel(Hit, CamLoc, End, ECC_Placement, Params))
