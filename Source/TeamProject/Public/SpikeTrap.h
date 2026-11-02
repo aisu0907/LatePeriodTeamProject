@@ -7,6 +7,7 @@
 #include "SpikeTrap.generated.h"
 
 class UBoxComponent;
+class UstaticMeshComponent;
 
 /**
  * 
@@ -18,8 +19,10 @@ class TEAMPROJECT_API ASpikeTrap : public ATrapBase
 
 public:
 	ASpikeTrap();
+	virtual void Tick(float DeltaTIme)override;
 
 protected:
+	virtual void BeginPlay()override;
 	virtual void ActivateTrap_Implementation(AActor* TriggeringActor) override;
 	virtual void ResetTrap_Implementation() override;
 
@@ -38,4 +41,23 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Trap")
 	void OnSpikesLowered();
 	
+	//j‚ÌƒƒbƒVƒ…
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent>SpikesMesh;
+
+	//j‚ª‰B‚ê‚Ä‚¢‚éˆÊ’u
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spike")
+	FVector LoweredLocation = FVector(0.f, 0.f, -100.f);
+
+	//j‚ªo‚Ä‚¢‚éˆÊ’u
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spike")
+	FVector ReisedLocation = FVector(0.f, 0.f, 0.f);
+	
+	// j‚ª“®‚­‘¬‚³(cm/•b)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spike")
+	float MoveSpeed = 400.f;
+
+private:
+	void MoveSpikesTo(const FVector& NewTarget);
+	FVector TargetLocation;
 };
