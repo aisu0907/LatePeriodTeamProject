@@ -16,25 +16,28 @@ UTrapPlacementComponent::UTrapPlacementComponent()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryComponentTick.bCanEverTick = true;
 
-    static ConstructorHelpers::FClassFinder<ATrapBase> TrapFinder(
-        TEXT("/Game/Asset/BluePrint/BP_SpikeTrap.BP_SpikeTrap_C"));   // ← 実際のBPのパスに変更
-    if (TrapFinder.Succeeded())
-    {
-        TrapList.Add(TrapFinder.Class);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("BP_SpikeTrap not found"));
-    }
-
 }
 
 void UTrapPlacementComponent::BeginPlay()
 {
     Super::BeginPlay();
 
+    //親クラスのAdventurerを取得
     PlayerChara = Cast<AAdventurerCharacter>(GetOwner());
 
+    if (TrapList.Num() == 0)
+    {
+        UClass* Loaded = LoadClass<ATrapBase>(
+            nullptr, TEXT("/Game/Asset/BluePrint/BP_SpikeTrap.BP_SpikeTrap_C"));
+        if (Loaded)
+        {
+            TrapList.Add(Loaded);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("BP_SpikeTrap load failed"));
+        }
+    }
 }
 
 void UTrapPlacementComponent::SelectTrapIndex(int32 NewIndex)
@@ -57,7 +60,10 @@ void UTrapPlacementComponent::TickComponent(float DeltaTime, ELevelTick TickType
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
     if (!PlayerChara || PlayerChara->GetAdvennturerState() != EAdvennturerState::TrapMode)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Trap: PlayerChara is null"));
         return;
+    }
 
     //見ているオブジェクト確認
     UpdateTarget();
@@ -93,16 +99,19 @@ void UTrapPlacementComponent::UpdateTarget()
     FCollisionQueryParams Params(SCENE_QUERY_STAT(TrapPlacement), false, GetOwner());
     const FVector End = CamLoc + CamRot.Vector() * TraceDistance;
 
+    DrawDebugLine(GetWorld(), CamLoc, End, FColor::Red, false, 0.f, 0, 2.f);
+
     //トレース・ECC_Placementに当たらなかった
     if (!GetWorld()->LineTraceSingleByChannel(Hit, CamLoc, End, ECC_Placement, Params))
     {
+        UE_LOG(LogTemp, Warning, TEXT("Trap: no hit"));
         return;
     }
 
     ATrapPlacementZone* Zone = Cast<ATrapPlacementZone>(Hit.GetActor());
     
     //当たったオブジェクトがZoneじゃなかったら
-    if (!Zone) { return; }
+    if (!Zone) { UE_LOG(LogTemp, Warning, TEXT("Trap: not zone")); return; }
 
     // 板の表面(ローカルZ+側)から当たったときだけ有効(裏面は弾く)
     if (FVector::DotProduct(Hit.ImpactNormal, Zone->GetActorUpVector()) < 0.5f)
@@ -112,7 +121,7 @@ void UTrapPlacementComponent::UpdateTarget()
 
     // この面に置けるトラップが未設定ならプレビューも出さない
     const TSubclassOf<ATrapBase> SelectedClass = GetSelectedTrapClass();
-    if (!SelectedClass) { return; }
+    if (!SelectedClass) { UE_LOG(LogTemp, Warning, TEXT("Trap: TrapList empty")); return; }
 
 
     //スナップと空き確認
