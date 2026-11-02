@@ -154,15 +154,16 @@ void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, A
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (AdvennturerState == TrapMode) { return; }
+	if (AdvennturerState != TrapMode) { return; }
+
 	//ƒS[ƒ‹‚Ì
 	if (AGoal* Goal = Cast<AGoal>(OtherActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Goal"));
-
-		if(Goal->IgnorePlayerIndex != PlayerIndex)
-
-		GamePlayMode->RoundWin(this);
+		if (Goal->IgnorePlayerIndex != PlayerIndex)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Goal"));
+			GamePlayMode->RoundWin(this);
+		}
 	}
 
 

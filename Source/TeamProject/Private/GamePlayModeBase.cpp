@@ -9,7 +9,7 @@ using enum EGamePhase;
 
 AGamePlayModeBase::AGamePlayModeBase()
 {
-    
+    PlayerWin.Init(0, 2); // —v‘f0‚ð2ŒÂ
 }
 
 void AGamePlayModeBase::BeginPlay()

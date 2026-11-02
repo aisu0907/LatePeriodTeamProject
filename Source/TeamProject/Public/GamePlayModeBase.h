@@ -53,5 +53,5 @@ private:
 	int32 VictoryConditions = 3;
 
 	UPROPERTY(VisibleAnywhere, Category = "PlayerWin")
-	int32 PlayerWin[2] = { 0 };
+	TArray<int32> PlayerWin;
 };
