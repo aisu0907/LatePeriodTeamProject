@@ -156,6 +156,8 @@ void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, A
 {
 	if (AdventurerState != PlayMode) { return; }
 
+	UE_LOG(LogTemp, Warning, TEXT("al"));
+
 	//ƒS[ƒ‹‚Ì
 	if (AGoal* Goal = Cast<AGoal>(OtherActor))
 	{
