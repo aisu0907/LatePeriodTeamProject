@@ -48,6 +48,9 @@ public:
 	// Trap フェーズの残り秒数
 	UFUNCTION(BlueprintPure, Category = "Phase")
 	float GetTrapRemainingTime() const;
+
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
 private:
 
 	void Result();
@@ -70,4 +73,7 @@ private:
 	//トラップフェーズタイマー
 	UPROPERTY()
 	FTimerHandle TrapPhaseTimerHandle;
+
+	//ログインした順に0,1
+	int32 NextPlayerIndex = 0;
 };

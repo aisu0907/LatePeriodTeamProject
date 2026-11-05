@@ -3,7 +3,8 @@
 #include "GamePlayModeBase.h"
 #include "AdventurerCharacter.h"
 #include "Kismet/GameplayStatics.h"
-#include "AdventurerCharacter.h"
+#include "EngineUtils.h"
+#include "GameFramework/PlayerStart.h"
 
 using enum EGamePhase;
 
@@ -43,6 +44,23 @@ void AGamePlayModeBase::Tick(float DeltaTime)
     }
 }
 
+AActor* AGamePlayModeBase::ChoosePlayerStart_Implementation(AController* Player)
+{
+    const FName WantedTag = (NextPlayerIndex == 0) ? FName("1P") : FName("2P");
+    ++NextPlayerIndex;
+
+    //PlayerStartを探す
+    for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
+    {
+        if (It->PlayerStartTag == WantedTag)
+        {
+            return *It;
+        }
+    }
+    // 見つからなければ通常の挙動にフォールバック
+    return Super::ChoosePlayerStart_Implementation(Player);
+}
+ 
 //フェーズ設定用
 void AGamePlayModeBase::SetPhase(EGamePhase NewPhase)
 {
