@@ -123,22 +123,22 @@ void APickUpItem::Use()
 		}
 
 		// ƒoƒtI—¹Žž‚Ìˆ—
-		FTimerHandle Handle;
+		//FTimerHandle Handle;
 		//Ch->GetWorldTimerManager().SetTimer(Handle,
-			FTimerDelegate::CreateWeakLambda(Ch, [Ch, BaseSpeed, BuffNC, BuffPSC]()
-				{
-					Ch->GetCharacterMovement()->MaxWalkSpeed = BaseSpeed;
-					Ch->bBuffActive = false;
-					if (UNiagaraComponent* NC = BuffNC.Get())
-					{
-						NC->DestroyComponent();
-					}
-					if (UParticleSystemComponent* PSC = BuffPSC.Get())
-					{
-						PSC->DestroyComponent();
-					}
-				}),
-			//FMath::Max(BuffDuration, 0.1f), false);
+		//	FTimerDelegate::CreateWeakLambda(Ch, [Ch, BaseSpeed, BuffNC, BuffPSC]()
+		//		{
+		//			Ch->GetCharacterMovement()->MaxWalkSpeed = BaseSpeed;
+		//			Ch->bBuffActive = false;
+		//			if (UNiagaraComponent* NC = BuffNC.Get())
+		//			{
+		//				NC->DestroyComponent();
+		//			}
+		//			if (UParticleSystemComponent* PSC = BuffPSC.Get())
+		//			{
+		//				PSC->DestroyComponent();
+		//			}
+		//		}),
+		//	FMath::Max(BuffDuration, 0.1f), false);
 	}
 	Destroy();
 }
