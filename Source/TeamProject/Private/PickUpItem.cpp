@@ -72,7 +72,7 @@ void APickUpItem::Use()
 		// バフ開始
 		UCharacterMovementComponent* CM = Ch->GetCharacterMovement();
 		const float BaseSpeed = CM->MaxWalkSpeed;
-		CM->MaxWalkSpeed = BaseSpeed * SpeedMultiplier;
+//		CM->MaxWalkSpeed = BaseSpeed * SpeedMultiplier;
 		Ch->bBuffActive = true;
 
 		const FVector Loc = Ch->GetActorLocation() + EffectOffset;
@@ -124,7 +124,7 @@ void APickUpItem::Use()
 
 		// バフ終了時の処理
 		FTimerHandle Handle;
-		Ch->GetWorldTimerManager().SetTimer(Handle,
+		//Ch->GetWorldTimerManager().SetTimer(Handle,
 			FTimerDelegate::CreateWeakLambda(Ch, [Ch, BaseSpeed, BuffNC, BuffPSC]()
 				{
 					Ch->GetCharacterMovement()->MaxWalkSpeed = BaseSpeed;
@@ -138,7 +138,7 @@ void APickUpItem::Use()
 						PSC->DestroyComponent();
 					}
 				}),
-			FMath::Max(BuffDuration, 0.1f), false);
+			//FMath::Max(BuffDuration, 0.1f), false);
 	}
 	Destroy();
 }
