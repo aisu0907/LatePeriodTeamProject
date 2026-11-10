@@ -37,21 +37,25 @@ AAdventurerCharacter::AAdventurerCharacter()
 	MoveSetting = GetCharacterMovement();
 
 	//キャラクターがカメラの向きを向かないように
-	bUseControllerRotationYaw = false;
-	MoveSetting->bOrientRotationToMovement = true;
+	bUseControllerRotationYaw = true; 
+	MoveSetting->bOrientRotationToMovement = false;
 
-	//カメラアームコンポーネント追加
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	//カメラアーム設定
-	CameraBoom->TargetArmLength = DefaultArmLength;
-	CameraBoom->bUsePawnControlRotation = true;
+	////カメラアームコンポーネント追加
+	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	//CameraBoom->SetupAttachment(RootComponent);
+	////カメラアーム設定
+	//CameraBoom->TargetArmLength = DefaultArmLength;
+	//CameraBoom->bUsePawnControlRotation = true;
 
 	//カメラコンポーネント追加
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->SetupAttachment(GetCapsuleComponent());
+	FollowCamera->SetRelativeLocation(FVector(0.f, 0.f, 64.f)); //目の高さ
 	//カメラ設定
-	FollowCamera->bUsePawnControlRotation = false;
+	FollowCamera->bUsePawnControlRotation = true;
+
+	//自分の全身メッシュはカメラに映さない
+	GetMesh()->SetOwnerNoSee(true);
 
 	//TrapPlacementコンポーネント
 	TrapPlacement = CreateDefaultSubobject<UTrapPlacementComponent>(TEXT("TrapPlacementComp"));
@@ -74,7 +78,7 @@ void AAdventurerCharacter::BeginPlay()
 	StartTransform = GetActorTransform();
 
 	//プレイヤー・カメラのステータス設定
-	CameraBoom->TargetArmLength = DefaultArmLength;
+	//CameraBoom->TargetArmLength = DefaultArmLength;
 	MoveSetting->AirControl = AirControllPower;
 
 }
