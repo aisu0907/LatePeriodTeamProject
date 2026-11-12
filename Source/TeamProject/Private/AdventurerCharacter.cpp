@@ -55,7 +55,7 @@ AAdventurerCharacter::AAdventurerCharacter()
 	FollowCamera->bUsePawnControlRotation = true;
 
 	//自分の全身メッシュはカメラに映さない
-	GetMesh()->SetOwnerNoSee(true);
+	GetMesh()->SetOwnerNoSee(false);
 
 	//TrapPlacementコンポーネント
 	TrapPlacement = CreateDefaultSubobject<UTrapPlacementComponent>(TEXT("TrapPlacementComp"));
