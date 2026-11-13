@@ -19,6 +19,8 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 
+#include "Components/PostProcessComponent.h"
+
 // Sets default values
 APickUpItem::APickUpItem()
 {
@@ -69,10 +71,7 @@ void APickUpItem::Use()
 {
 	if (AAdventurerCharacter* Ch = Cast<AAdventurerCharacter>(GetAttachParentActor()))
 	{
-		// バフ開始
-		UCharacterMovementComponent* CM = Ch->GetCharacterMovement();
-		const float BaseSpeed = CM->MaxWalkSpeed;
-//		CM->MaxWalkSpeed = BaseSpeed * SpeedMultiplier;
+
 		Ch->bBuffActive = true;
 
 		const FVector Loc = Ch->GetActorLocation() + EffectOffset;
@@ -102,6 +101,14 @@ void APickUpItem::Use()
 				GetWorld(), UseParticle, Loc, Rot, EffectScale, true);
 		}
 
+		//効果リストを全部適用
+		float MaxDuration = 0.1f;
+		for (const FItemEffectEntry& E : Effects)
+		{
+			ApplyEntry(Ch, E);
+			MaxDuration = FMath::Max(MaxDuration, E.Duration);
+		}
+
 		// バフ中に出し続けるエフェクト(Niagara)
 		TWeakObjectPtr<UNiagaraComponent> BuffNC;
 		if (PickupEffect)
@@ -122,24 +129,77 @@ void APickUpItem::Use()
 				EAttachLocation::KeepRelativeOffset, false);
 		}
 
-		// バフ終了時の処理
-		//FTimerHandle Handle;
-		//Ch->GetWorldTimerManager().SetTimer(Handle,
-		//	FTimerDelegate::CreateWeakLambda(Ch, [Ch, BaseSpeed, BuffNC, BuffPSC]()
-		//		{
-		//			Ch->GetCharacterMovement()->MaxWalkSpeed = BaseSpeed;
-		//			Ch->bBuffActive = false;
-		//			if (UNiagaraComponent* NC = BuffNC.Get())
-		//			{
-		//				NC->DestroyComponent();
-		//			}
-		//			if (UParticleSystemComponent* PSC = BuffPSC.Get())
-		//			{
-		//				PSC->DestroyComponent();
-		//			}
-		//		}),
-		//	FMath::Max(BuffDuration, 0.1f), false);
+		//バフ終了時の処理
+		FTimerHandle Handle;
+		Ch->GetWorldTimerManager().SetTimer(Handle,
+			FTimerDelegate::CreateWeakLambda(Ch, [Ch, BuffNC, BuffPSC]()
+				{
+					Ch->bBuffActive = false;
+					if (UNiagaraComponent* NC = BuffNC.Get())
+					{
+						NC->DestroyComponent();
+					}
+					if (UParticleSystemComponent* PSC = BuffPSC.Get())
+					{
+						PSC->DestroyComponent();
+					}
+				}),
+			MaxDuration, false);
+
+		Ch->HeldItem = nullptr;
 	}
 	Destroy();
 }
+
+	//効果1件分の適応
+	void APickUpItem::ApplyEntry(AAdventurerCharacter * Target, const FItemEffectEntry & E)
+	{
+		UCharacterMovementComponent* CM = Target->GetCharacterMovement();
+		if (!CM)return;
+
+		const float Mult = FMath::Max(E.Multiplier, 0.01f);
+		TWeakObjectPtr<UPostProcessComponent>VisionPP;
+
+		switch(E.Type)
+		{
+		case EItemEffectType::MoveSpeed:CM->MaxWalkSpeed *= Mult; break;
+		case EItemEffectType::JumpPower:CM->JumpZVelocity *= Mult; break;
+		case EItemEffectType::Vision:
+		{
+			UPostProcessComponent* PP = NewObject<UPostProcessComponent>(Target);
+			PP->bUnbound = true;
+			PP->BlendWeight = 1.f;
+			PP->Priority = 10.f;
+
+			const float I = FMath::Clamp(E.Intensity, 0.f, 1.f);
+			FPostProcessSettings& S = PP->Settings;
+
+			S.bOverride_VignetteIntensity = true;
+			S.VignetteIntensity = FMath::Lerp(0.4f, 2.0f, I);//周辺を暗く
+
+			S.bOverride_ColorSaturation = true;
+			S.ColorSaturation = FVector4(1.f, 1.f, 1.f, 1.f) * FMath::Lerp(1.f, 0.3f, I);
+
+			S.bOverride_SceneFringeIntensity = true;
+			S.SceneFringeIntensity = FMath::Lerp(0.f, 4.f, I);//色のにじみ
+
+			PP->RegisterComponent();
+			VisionPP = PP;
+			break;
+		}
+		}
+		//この効果の間だけ出し続けるエフェクト
+		TWeakObjectPtr<UNiagaraComponent> LoopNC;
+		if (E.LoopEffect)
+		{
+			LoopNC = UNiagaraFunctionLibrary::SpawnSystemAttached(
+				E.LoopEffect, Target->GetRootComponent(), NAME_None,
+				EffectOffset, EffectRotation, EffectScale,
+				EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+		}
+
+		//終了時に割り戻す(アイテム本体は消されるためキャラのタイマーを使う)
+		FTimerHandle Handle;
+	}
+
 
