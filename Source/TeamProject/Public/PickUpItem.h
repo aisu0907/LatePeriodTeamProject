@@ -15,7 +15,7 @@ class UParticleSystem;
 
 //ƒfƒoƒt
 class ACharacter;
-class AAdventurerChracter;
+class AAdventurerCharacter;
 
 UENUM(BlueprintType)
 enum  class EItemEffectType:uint8
@@ -106,5 +106,5 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	TArray<FItemEffectEntry>Effects;
 
-	void ApplyEntry(AAdventurerChracter* Target, const FItemEffectEntry& Entry);
+	void ApplyEntry(AAdventurerCharacter* Target, const FItemEffectEntry& Entry);
 };
