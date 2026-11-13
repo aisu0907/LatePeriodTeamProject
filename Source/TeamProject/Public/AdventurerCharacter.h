@@ -214,7 +214,7 @@ private:
     
 #pragma endregion CharacterSetting
 
-    UPROPERTY()
+    UPROPERTY(EditAnywhere)
     TObjectPtr<UTrapPlacementComponent> TrapPlacement;
 
     //ゲームモードクラス

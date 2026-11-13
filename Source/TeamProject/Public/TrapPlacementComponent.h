@@ -24,11 +24,11 @@ public:
 	FActorComponentTickFunction* ThisTickFunction) override;
 
 	// 設置出来るトラップを入れる用
-	UPROPERTY(EditAnywhere, Category = "Trap")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trap")
 	TArray  <TSubclassOf<ATrapBase>> TrapList;
 
 	// 選択してるトラップの番号
-	UPROPERTY(VisibleAnywhere, Category = "Trap")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Trap")
 	int32 SelectedIndex = 0;
 
 	// 選択中のインデックスを変更
