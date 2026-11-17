@@ -15,7 +15,7 @@ class UTrapPlacementComponent; //トラップ設置Comp
 class ATrapBase; //トラップベース
 class APickUpItem; //アイテム
 class UAnimSequence; //アニメーション
-class AGamePlayModeBase;
+class AGamePlayModeBase; 
 
 //プレイヤーの状態管理用
 UENUM(BlueprintType)
@@ -61,6 +61,7 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "Animation")
     TObjectPtr<UAnimSequence> WalkAnim;
+
 
     UPROPERTY(EditAnywhere, Category = "Animation")
     TObjectPtr<UAnimSequence> JumpAnim;
@@ -191,7 +192,6 @@ private:
     float AirControllPower = 0;
 
     //カメラアーム距離
-
     UPROPERTY(EditAnywhere, Category = "Camera")
     float DefaultArmLength = 400.f;
 

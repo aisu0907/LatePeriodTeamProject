@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Phase")
 	float TrapPhaseTime = 30.f;
 
+	//GamePhaseŽæ“¾—p
+	EGamePhase GetGamePhase() const { return GamePhase; }
+
 	void BeginPlay() override; 
 
 	// Called every frame

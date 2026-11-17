@@ -9,6 +9,7 @@
 
 class UShapeComponent;
 class UStaticMeshComponent;
+class GamePlayModeBase;
 
 UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EPlaceableSurface : uint8

@@ -132,6 +132,7 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	}
 }
 
+//Ú‘±ŒÄ‚Ño‚µ
 void AAdventurerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -154,6 +155,7 @@ void AAdventurerCharacter::PossessedBy(AController* NewController)
 	UE_LOG(LogTemp, Warning, TEXT("PlayerIndex = %d"), PlayerIndex);
 }
 
+//ÚGŒÄ‚Ño‚µ
 void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
