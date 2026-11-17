@@ -200,6 +200,18 @@ void APickUpItem::Use()
 
 		//終了時に割り戻す(アイテム本体は消されるためキャラのタイマーを使う)
 		FTimerHandle Handle;
+		const EItemEffectType Type = E.Type;
+		//Target->GetWorldTimerManager().SetTimer(Handle,
+		/*	FTimerDelegate::CreateWeakLambda(Target, [Target, Type, Mult, LoopNC, VisionPP]()
+				{
+					if(UCharacterMovementComponent* C=Target->GetCharacterMovement())
+					switch (Type)
+					{
+					default:
+						break;
+					}
+				}),*/
+				
 	}
 
 
