@@ -79,6 +79,7 @@ void UTrapPlacementComponent::TickComponent(float DeltaTime, ELevelTick TickType
     }
 }
 
+//選択してるマス判定用
 void UTrapPlacementComponent::UpdateTarget()
 {
     bHasValidTarget = false;
@@ -125,43 +126,52 @@ void UTrapPlacementComponent::UpdateTarget()
 
     //スナップと空き確認
     FVector Snapped; FIntPoint Cell;
-    if (Zone->TrySnap(Hit.ImpactPoint, Snapped, Cell) && Zone->IsCellFree(Cell))
+    if (Zone->TrySnap(Hit.ImpactPoint, Snapped, Cell)
+        && Zone->IsCellFree(Cell) 
+        && !IsCellBlocked(Zone, Snapped))
     {
         bHasValidTarget = true;
+        
+        //ターゲットの情報を取得
         TargetLocation = Snapped;
         TargetCell = Cell;
         TargetZone = Zone;
     }
 }
 
+//トラップ設置用
 bool UTrapPlacementComponent::PlaceTrap()
 {
     const TSubclassOf<ATrapBase> ClassToSpawn = GetSelectedTrapClass();
     if (!bHasValidTarget || !TargetZone.IsValid() || !ClassToSpawn) { return false; }
+
+    if (IsCellBlocked(TargetZone.Get(), TargetLocation)) { return false; }
 
     FActorSpawnParameters Params;
     Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
     const FTransform SpawnTransform(TargetZone->GetActorQuat(), TargetLocation);
 
-    const float Half = TargetZone->CellSize * 0.5f;
-    const FVector Center = TargetLocation + TargetZone->GetActorUpVector() * Half;
-
-    FCollisionShape Box = FCollisionShape::MakeBox(FVector(Half));
-    FCollisionQueryParams QParams(SCENE_QUERY_STAT(TrapOverlap), false);
-
-    //設置位置にプレイヤーがいないかの確認
-    if (GetWorld()->OverlapAnyTestByChannel(
-        Center, TargetZone->GetActorQuat(), ECC_Pawn, Box, QParams))
-    {
-        return false; // 誰かが重なっているので置けない
-    }
-
     ATrapBase* Trap = GetWorld()->SpawnActor<ATrapBase>(ClassToSpawn, SpawnTransform, Params);
-
     //トラップ設置チェック
     if (!Trap) { return false; }
 
     TargetZone->RegisterTrap(TargetCell, Trap);
     return true;
+}
+
+//アクター接触判定用
+bool UTrapPlacementComponent::IsCellBlocked(const ATrapPlacementZone* Zone, const FVector& CellLocation) const
+{
+    const float Half = Zone->CellSize * 0.5f;
+    const FVector Center = CellLocation + Zone->GetActorUpVector() * Half;
+
+    //足元や板との接触だけで弾かないよう、少し小さくする
+    const FCollisionShape Box = FCollisionShape::MakeBox(FVector(Half * 0.9f));
+
+    FCollisionQueryParams QParams(SCENE_QUERY_STAT(TrapOverlap), false);
+
+    //重なったら置けない
+    return GetWorld()->OverlapAnyTestByChannel(
+        Center, Zone->GetActorQuat(), ECC_Pawn, Box, QParams);
 }

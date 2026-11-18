@@ -57,8 +57,7 @@ private:
 	// 選択したトラップ取り出し用
 	TSubclassOf<ATrapBase> GetSelectedTrapClass() const;
 
-
-
+	bool IsCellBlocked(const ATrapPlacementZone* Zone, const FVector& CellLocation) const;
 
 	bool bHasValidTarget = false;
 
