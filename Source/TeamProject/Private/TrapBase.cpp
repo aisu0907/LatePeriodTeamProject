@@ -28,6 +28,8 @@ void ATrapBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GamePlayMode = GetWorld()->GetAuthGameMode<AGamePlayModeBase>();
+
 	//コリジョンが設定されていたら
 	if (TriggerVolume)
 	{
@@ -62,6 +64,9 @@ void ATrapBase::OnTriggerBeginOverlap(
 	bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
+	if (GamePlayMode->GetGamePhase() != EGamePhase::Play)
+		return;
+
 	//衝突したオブジェクトを判定
 	if (CanTrigger(OtherActor))
 	{
@@ -80,6 +85,7 @@ bool ATrapBase::CanTrigger(AActor* TriggeringActor) const
 //トラップ予備動作発動
 void ATrapBase::TriggerTrap(AActor* TriggeringActor)
 {
+
 	//トラップの状態を発動状態に
 	TrapState = ETrapState::Triggered;
 
