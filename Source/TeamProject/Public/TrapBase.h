@@ -9,7 +9,7 @@
 
 class UShapeComponent;
 class UStaticMeshComponent;
-class GamePlayModeBase;
+class AGamePlayModeBase;
 
 UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EPlaceableSurface : uint8
@@ -126,6 +126,8 @@ protected:
 	//トラップの状態保存用
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Trap")
 	ETrapState TrapState = ETrapState::Idle;
+
+	TObjectPtr<AGamePlayModeBase> GamePlayMode;
 
 	//タイマー管理用
 	FTimerHandle ActivationTimer;
