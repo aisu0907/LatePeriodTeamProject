@@ -64,9 +64,6 @@ void ATrapBase::OnTriggerBeginOverlap(
 	bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
-	if (GamePlayMode->GetGamePhase() != EGamePhase::Play)
-		return;
-
 	//衝突したオブジェクトを判定
 	if (CanTrigger(OtherActor))
 	{
@@ -78,6 +75,9 @@ void ATrapBase::OnTriggerBeginOverlap(
 //Pawn判定
 bool ATrapBase::CanTrigger(AActor* TriggeringActor) const
 {
+	if (!GamePlayMode || GamePlayMode->GetGamePhase() != EGamePhase::Play)
+		return false;
+
 	//待機状態でオブジェクトがPawnクラスの場合true : じゃない場合 false
 	return TrapState == ETrapState::Idle && Cast<APawn>(TriggeringActor) != nullptr;
 }

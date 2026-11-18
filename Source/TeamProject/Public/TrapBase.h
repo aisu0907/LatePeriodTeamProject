@@ -127,6 +127,7 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Trap")
 	ETrapState TrapState = ETrapState::Idle;
 
+	UPROPERTY()
 	TObjectPtr<AGamePlayModeBase> GamePlayMode;
 
 	//タイマー管理用

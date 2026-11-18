@@ -7,6 +7,8 @@
 #include "TrapPlacementZone.generated.h"
 
 class UBoxComponent;
+class UStaticMeshComponent;
+class UMaterialInterface;
 
 #define ECC_Placement ECC_GameTraceChannel1
 
@@ -26,6 +28,14 @@ class TEAMPROJECT_API ATrapPlacementZone : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ATrapPlacementZone();
+
+	// ゾーンの可視化の表示/非表示を切り替える
+	UFUNCTION(BlueprintCallable, Category = "Zone")
+	void SetZoneVisible(bool bVisible);
+
+	// 可視化用のマテリアル
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Zone")
+	TObjectPtr<UMaterialInterface> ZoneMaterial;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UBoxComponent> ZoneBox;
@@ -57,6 +67,10 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+
+	// ゾーンメッシュ
+	UPROPERTY(VisibleAnywhere, Category = "Zone")
+	TObjectPtr<UStaticMeshComponent> ZoneMesh;
 
 	TMap<FIntPoint, TWeakObjectPtr<AActor>> Occupied;
 	

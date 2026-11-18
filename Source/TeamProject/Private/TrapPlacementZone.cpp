@@ -18,6 +18,21 @@ ATrapPlacementZone::ATrapPlacementZone()
 	ZoneBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ZoneBox->SetCollisionResponseToAllChannels(ECR_Ignore);
 	ZoneBox->SetCollisionResponseToChannel(ECC_Placement, ECR_Block);
+
+	//可視化用メッシュ
+	ZoneMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ZoneVisual"));
+	ZoneMesh->SetupAttachment(ZoneBox);
+	ZoneMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); // トレースに影響させない
+	ZoneMesh->SetCastShadow(false);
+	ZoneMesh->SetVisibility(false); //非表示
+	
+	//メッシュを設定
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(
+		TEXT("/Engine/BasicShapes/Cube.Cube"));
+	if (CubeMesh.Succeeded())
+	{
+		ZoneMesh->SetStaticMesh(CubeMesh.Object);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -25,6 +40,22 @@ void ATrapPlacementZone::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	const FVector Extent = ZoneBox->GetUnscaledBoxExtent();
+	ZoneMesh->SetRelativeScale3D(Extent / 50.f);
+
+	if (ZoneMaterial)
+	{
+		ZoneMesh->SetMaterial(0, ZoneMaterial);
+	}
+}
+
+//メッシュ表示を設定
+void ATrapPlacementZone::SetZoneVisible(bool bVisible)
+{
+	if (ZoneMesh)
+	{
+		ZoneMesh->SetVisibility(bVisible);
+	}
 }
 
 //トラップをマスの中心に吸着
