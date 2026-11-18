@@ -152,66 +152,76 @@ void APickUpItem::Use()
 }
 
 	//効果1件分の適応
-	void APickUpItem::ApplyEntry(AAdventurerCharacter * Target, const FItemEffectEntry & E)
+void APickUpItem::ApplyEntry(AAdventurerCharacter* Target, const FItemEffectEntry& E)
+{
+	UCharacterMovementComponent* CM = Target->GetCharacterMovement();
+	if (!CM)return;
+
+	const float Mult = FMath::Max(E.Multiplier, 0.01f);
+	TWeakObjectPtr<UPostProcessComponent>VisionPP;
+
+	switch (E.Type)
 	{
-		UCharacterMovementComponent* CM = Target->GetCharacterMovement();
-		if (!CM)return;
+	case EItemEffectType::MoveSpeed:CM->MaxWalkSpeed *= Mult; break;
+	case EItemEffectType::JumpPower:CM->JumpZVelocity *= Mult; break;
+	case EItemEffectType::Vision:
+	{
+		UPostProcessComponent* PP = NewObject<UPostProcessComponent>(Target);
+		PP->bUnbound = true;
+		PP->BlendWeight = 1.f;
+		PP->Priority = 10.f;
 
-		const float Mult = FMath::Max(E.Multiplier, 0.01f);
-		TWeakObjectPtr<UPostProcessComponent>VisionPP;
+		const float I = FMath::Clamp(E.Intensity, 0.f, 1.f);
+		FPostProcessSettings& S = PP->Settings;
 
-		switch(E.Type)
-		{
-		case EItemEffectType::MoveSpeed:CM->MaxWalkSpeed *= Mult; break;
-		case EItemEffectType::JumpPower:CM->JumpZVelocity *= Mult; break;
-		case EItemEffectType::Vision:
-		{
-			UPostProcessComponent* PP = NewObject<UPostProcessComponent>(Target);
-			PP->bUnbound = true;
-			PP->BlendWeight = 1.f;
-			PP->Priority = 10.f;
+		S.bOverride_VignetteIntensity = true;
+		S.VignetteIntensity = FMath::Lerp(0.4f, 2.0f, I);//周辺を暗く
 
-			const float I = FMath::Clamp(E.Intensity, 0.f, 1.f);
-			FPostProcessSettings& S = PP->Settings;
+		S.bOverride_ColorSaturation = true;
+		S.ColorSaturation = FVector4(1.f, 1.f, 1.f, 1.f) * FMath::Lerp(1.f, 0.3f, I);
 
-			S.bOverride_VignetteIntensity = true;
-			S.VignetteIntensity = FMath::Lerp(0.4f, 2.0f, I);//周辺を暗く
+		S.bOverride_SceneFringeIntensity = true;
+		S.SceneFringeIntensity = FMath::Lerp(0.f, 4.f, I);//色のにじみ
 
-			S.bOverride_ColorSaturation = true;
-			S.ColorSaturation = FVector4(1.f, 1.f, 1.f, 1.f) * FMath::Lerp(1.f, 0.3f, I);
+		PP->RegisterComponent();
+		VisionPP = PP;
+		break;
+	}
+	}
+	//この効果の間だけ出し続けるエフェクト
+	TWeakObjectPtr<UNiagaraComponent> LoopNC;
+	if (E.LoopEffect)
+	{
+		LoopNC = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			E.LoopEffect, Target->GetRootComponent(), NAME_None,
+			EffectOffset, EffectRotation, EffectScale,
+			EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
+	}
 
-			S.bOverride_SceneFringeIntensity = true;
-			S.SceneFringeIntensity = FMath::Lerp(0.f, 4.f, I);//色のにじみ
+	//終了時に割り戻す(アイテム本体は消されるためキャラのタイマーを使う)
+	const EItemEffectType Type = E.Type;
+	const float Duration = FMath::Max(E.Duration, 0.1f);
 
-			PP->RegisterComponent();
-			VisionPP = PP;
-			break;
-		}
-		}
-		//この効果の間だけ出し続けるエフェクト
-		TWeakObjectPtr<UNiagaraComponent> LoopNC;
-		if (E.LoopEffect)
-		{
-			LoopNC = UNiagaraFunctionLibrary::SpawnSystemAttached(
-				E.LoopEffect, Target->GetRootComponent(), NAME_None,
-				EffectOffset, EffectRotation, EffectScale,
-				EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
-		}
-
-		//終了時に割り戻す(アイテム本体は消されるためキャラのタイマーを使う)
-		FTimerHandle Handle;
-		const EItemEffectType Type = E.Type;
-		//Target->GetWorldTimerManager().SetTimer(Handle,
-		/*	FTimerDelegate::CreateWeakLambda(Target, [Target, Type, Mult, LoopNC, VisionPP]()
+	FTimerDelegate Delegate = FTimerDelegate::CreateWeakLambda(Target,
+		[Target, Type, Mult, LoopNC, VisionPP]()
+			{
+				if (UCharacterMovementComponent* C = Target->GetCharacterMovement())
 				{
-					if(UCharacterMovementComponent* C=Target->GetCharacterMovement())
 					switch (Type)
 					{
-					default:
-						break;
+					case EItemEffectType::MoveSpeed: C->MaxWalkSpeed /= Mult;	break;
+					case EItemEffectType::JumpPower:C->JumpZVelocity /= Mult;	break;
+					case EItemEffectType::Vision:								break;
 					}
-				}),*/
-				
-	}
+				}
+		
+				if (UNiagaraComponent* NC = LoopNC.Get()) { NC->DestroyComponent(); }
+				if (UPostProcessComponent* PP = VisionPP.Get()) { PP->DestroyComponent(); }
+		});
+	FTimerHandle Handle;
+	Target->GetWorldTimerManager().SetTimer(Handle, Delegate, Duration, false);
+
+	
+}
 
 

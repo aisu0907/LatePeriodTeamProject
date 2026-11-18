@@ -37,9 +37,9 @@ struct  FItemEffectEntry
 		meta = (ClampMin = "0.01", EditCondition = "Type != EItemEffectType::Vision", EditConditionHides))
 	float Multiplier = 0.5f;
 
-	// ‹ŠEˆ«‰»‚Ì‹­‚³(0=‚Ù‚Ú•Ï‰»‚È‚µA1=Å‘å)
+	// ‹ŠEˆ«‰»‚Ì‹­‚³(0=‚Ù‚Ú•Ï‰»‚È‚µA3=Å‘å)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (ClampMin = "0.0", ClampMax = "1.0", EditCondition = "Type == EItemEffectType::Vision", EditConditionHides))
+		meta = (ClampMin = "0.0", ClampMax = "3.0", EditCondition = "Type == EItemEffectType::Vision", EditConditionHides))
 	float Intensity = 0.7f;
 
 	// Œø‰ÊŠÔ(•b)
