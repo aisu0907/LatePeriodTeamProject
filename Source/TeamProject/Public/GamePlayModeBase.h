@@ -65,8 +65,6 @@ private:
 	//ラウンドリセット用
 	void RoundReset(EAdventurerState NewState);
 
-
-
 	//フェーズセット用
 	void SetPhase(EGamePhase NewPhase);
 
