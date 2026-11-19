@@ -7,7 +7,6 @@
 #include "GamePlayModeBase.generated.h"
 
 class AAdventurerCharacter;
-class ATrapPlacementZone;
 enum class EAdventurerState : uint8;
 
 //プレイヤーIndex
@@ -36,9 +35,6 @@ public:
 
 	AGamePlayModeBase();
 
-	//トラップフェーズ終了用
-	void TrapPhaseEnd();
-
 	UPROPERTY(EditDefaultsOnly, Category = "Phase")
 	float TrapPhaseTime = 30.f;
 
@@ -62,20 +58,14 @@ private:
 
 	void Result();
 
-	//ラウンドリセット用
 	void RoundReset(EAdventurerState NewState);
 
+	void TrapPhaseEnd();
 
-
-	//フェーズセット用
 	void SetPhase(EGamePhase NewPhase);
-
-	//Zoneの表示切り替え用
-	void SetZonesVisible(bool bVisible);
 
 	EGamePhase GamePhase = EGamePhase::Trap;
 
-	//必要勝利数
 	UPROPERTY( EditAnywhere, Category = "PlayerWin")
 	int32 VictoryConditions = 3;
 
@@ -86,9 +76,6 @@ private:
 	//トラップフェーズタイマー
 	UPROPERTY()
 	FTimerHandle TrapPhaseTimerHandle;
-
-	UPROPERTY()
-	TArray<TObjectPtr<ATrapPlacementZone>> Zones;
 
 	//ログインした順に0,1
 	int32 NextPlayerIndex = 0;

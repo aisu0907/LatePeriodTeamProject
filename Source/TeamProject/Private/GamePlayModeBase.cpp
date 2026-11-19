@@ -5,7 +5,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerStart.h"
-#include "TrapPlacementZone.h"
 
 using enum EGamePhase;
 
@@ -25,13 +24,6 @@ void AGamePlayModeBase::BeginPlay()
         //プレイヤー2を作成
         UGameplayStatics::CreatePlayer(this, 1, true);
     }
-
-    //ワールド内のTrapZoneを格納する
-    for (TActorIterator<ATrapPlacementZone> It(GetWorld()); It; ++It)
-    {
-        Zones.Add(*It);
-    }
-
 
     //初期フェーズ設定
     SetPhase(EGamePhase::Trap);
@@ -78,33 +70,14 @@ void AGamePlayModeBase::SetPhase(EGamePhase NewPhase)
     //フェーズ更新
     GamePhase = NewPhase;
 
-    if (NewPhase != EGamePhase::Trap)
-    {
-        SetZonesVisible(false);
-    }
-
     //トラップフェーズの時
     if (NewPhase == EGamePhase::Trap)
     {
-        SetZonesVisible(true); //設置エリア表示
         //タイマー起動
         GetWorldTimerManager().SetTimer(
             TrapPhaseTimerHandle, this, &AGamePlayModeBase::TrapPhaseEnd,
             TrapPhaseTime, false);
     }
-}
-
-//トラップ設置ゾーン表示切り替え
-void AGamePlayModeBase::SetZonesVisible(bool bVisible)
-{
-    for (ATrapPlacementZone* Zone : Zones)
-    {
-        if (Zone)
-        {
-            Zone->SetZoneVisible(bVisible);
-        }
-    }
-
 }
 
 //Trapフェーズ終了時用
