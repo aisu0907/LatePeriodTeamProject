@@ -81,6 +81,13 @@ void AAdventurerCharacter::BeginPlay()
 	//CameraBoom->TargetArmLength = DefaultArmLength;
 	MoveSetting->AirControl = AirControllPower;
 
+	if (TrapSlotChangeAction)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Action = %s, ValueType = %d"),
+			*TrapSlotChangeAction->GetName(),
+			(int32)TrapSlotChangeAction->ValueType);
+	}
+
 }
 
 // Called every frame
@@ -124,7 +131,7 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::Look);
 		EIC->BindAction(PlaceTrapAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PlaceTrap);
 		EIC->BindAction(TrapRotateAction, ETriggerEvent::Started, this, &AAdventurerCharacter::TrapRotate);
-		EIC->BindAction(TrapSlotChangeAction, ETriggerEvent::Started, this, &AAdventurerCharacter::TrapSlotChange);
+		EIC->BindAction(TrapSlotChangeAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::TrapSlotChange);
 
 		EIC->BindAction(PhaseSkipAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PhaseSkip);
 		EIC->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
@@ -164,8 +171,6 @@ void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, A
 	bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (AdventurerState != PlayMode) { return; }
-
-	UE_LOG(LogTemp, Warning, TEXT("al"));
 
 	//ƒS[ƒ‹‚Ì
 	if (AGoal* Goal = Cast<AGoal>(OtherActor))
@@ -237,10 +242,16 @@ void AAdventurerCharacter::TrapSlotChange(const FInputActionValue& Value)
 	if (AdventurerState != TrapMode)
 		return;
 
+	UE_LOG(LogTemp, Warning, TEXT("slotChange"));
+
 	//”’l‚ğæ“¾
 	const float Axis = Value.Get<float>();
 
+	UE_LOG(LogTemp, Warning, TEXT("%f"), Axis);
+
 	const int32 Dir = (Axis > 0.f) ? 1 : -1;
+
+	UE_LOG(LogTemp, Warning, TEXT("%d"), Dir);
 
 	if (TrapPlacement)
 	{
