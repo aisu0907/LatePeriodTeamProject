@@ -36,6 +36,9 @@ public:
 
 	AGamePlayModeBase();
 
+	//トラップフェーズ終了用
+	void TrapPhaseEnd();
+
 	UPROPERTY(EditDefaultsOnly, Category = "Phase")
 	float TrapPhaseTime = 30.f;
 
@@ -62,8 +65,7 @@ private:
 	//ラウンドリセット用
 	void RoundReset(EAdventurerState NewState);
 
-	//トラップフェーズ終了用
-	void TrapPhaseEnd();
+
 
 	//フェーズセット用
 	void SetPhase(EGamePhase NewPhase);
