@@ -114,6 +114,9 @@ private:
     UFUNCTION()
     void Cancel();
 
+    UFUNCTION()
+    void PhaseSkip();
+
     //アイテム使用関数
     UFUNCTION()
     void UseHeldItem();
@@ -177,6 +180,11 @@ private:
     //トラップスロット左アクション
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* LeftTrapSlotAction;
+
+    //トラップフェーズスキップ
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UInputAction* PhaseSkipAction;
+
 
 #pragma endregion InputAction
 

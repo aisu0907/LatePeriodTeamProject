@@ -124,6 +124,8 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::Look);
 		EIC->BindAction(PlaceTrapAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PlaceTrap);
 		EIC->BindAction(TrapRotateAction, ETriggerEvent::Started, this, &AAdventurerCharacter::TrapRotate);
+		EIC->BindAction(PhaseSkipAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PhaseSkip);
+
 		EIC->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
@@ -250,7 +252,15 @@ void AAdventurerCharacter::Cancel()
 
 }
 
+void AAdventurerCharacter::PhaseSkip()
+{
+	if (GamePlayMode)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Skip"));
 
+		GamePlayMode->TrapPhaseEnd();
+	}
+}
 //プレイヤーリセット関数
 void AAdventurerCharacter::PlayerReset(EAdventurerState NewState)
 {
