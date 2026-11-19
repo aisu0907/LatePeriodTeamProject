@@ -124,8 +124,9 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::Look);
 		EIC->BindAction(PlaceTrapAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PlaceTrap);
 		EIC->BindAction(TrapRotateAction, ETriggerEvent::Started, this, &AAdventurerCharacter::TrapRotate);
-		EIC->BindAction(PhaseSkipAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PhaseSkip);
+		EIC->BindAction(TrapSlotChangeAction, ETriggerEvent::Started, this, &AAdventurerCharacter::TrapSlotChange);
 
+		EIC->BindAction(PhaseSkipAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PhaseSkip);
 		EIC->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
@@ -231,10 +232,20 @@ void AAdventurerCharacter::TrapRotate()
 }
 
 //トラップスロット操作関数
-void AAdventurerCharacter::TrapSlotChange()
+void AAdventurerCharacter::TrapSlotChange(const FInputActionValue& Value)
 {
 	if (AdventurerState != TrapMode)
 		return;
+
+	//数値を取得
+	const float Axis = Value.Get<float>();
+
+	const int32 Dir = (Axis > 0.f) ? 1 : -1;
+
+	if (TrapPlacement)
+	{
+		TrapPlacement->ChangeSelectTrapIndex(Dir);
+	}
 }
 
 //アイテム使用関数

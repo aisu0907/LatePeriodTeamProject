@@ -109,7 +109,7 @@ private:
 
     //トラップスロット操作関数
     UFUNCTION()
-    void TrapSlotChange();
+    void TrapSlotChange(const FInputActionValue& Value);
 
     UFUNCTION()
     void Cancel();
@@ -173,13 +173,10 @@ private:
     UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* CancelAction;
 
-    //トラップスロット右アクション
+    //トラップスロットチェンジ
     UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* RightTrapSlotAction;
+    UInputAction* TrapSlotChangeAction;
 
-    //トラップスロット左アクション
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* LeftTrapSlotAction;
 
     //トラップフェーズスキップ
     UPROPERTY(EditAnywhere, Category = "Input")
@@ -207,6 +204,10 @@ private:
     UPROPERTY(EditAnywhere, Category = "Camera")
     float CameraSpeed = 0;
     
+    //初期位置(リスポーン位置)
+    UPROPERTY()
+    FTransform StartTransform;
+
     //プレイヤーのトラップ設置上限
     UPROPERTY(EditAnywhere, Category = "Trap")
     int32 TrapPlaceMax = 5;
@@ -232,9 +233,6 @@ private:
     //アニメーション
     UPROPERTY()
     TObjectPtr<UAnimSequence>CurrentAnim;
-
-    //初期位置(リスポーン位置)
-    FTransform StartTransform;
 
     UPROPERTY(VisibleAnywhere)
     int32 PlayerIndex = INDEX_NONE;
