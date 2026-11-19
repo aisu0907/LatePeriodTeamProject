@@ -40,11 +40,12 @@ void UTrapPlacementComponent::BeginPlay()
     }
 }
 
-void UTrapPlacementComponent::SelectTrapIndex(int32 NewIndex)
+//選択トラップ変更用
+void UTrapPlacementComponent::ChangeSelectTrapIndex(int32 NewIndex)
 {
-    if (TrapList.IsValidIndex(NewIndex))
+    if (TrapList.IsValidIndex(SelectedIndex + NewIndex))
     {
-        SelectedIndex = NewIndex;
+        SelectedIndex += NewIndex;
     }
 }
 

@@ -31,9 +31,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Trap")
 	int32 SelectedIndex = 0;
 
-	// 選択中のインデックスを変更
+	//選択中のインデックスを変更
 	UFUNCTION(BlueprintCallable, Category = "Trap")
-	void SelectTrapIndex(int32 NewIndex);
+	void ChangeSelectTrapIndex(int32 NewIndex);
 
 	// 入力アクションから呼ぶ
 	UFUNCTION(BlueprintCallable, Category = "Trap")
