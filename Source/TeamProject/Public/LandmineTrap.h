@@ -6,6 +6,8 @@
 #include "TrapBase.h"
 #include "LandmineTrap.generated.h"
 
+class UNiagaraSystem;
+
 class USphereComponent;
 
 UCLASS()
@@ -27,6 +29,14 @@ protected:
 	//爆発の範囲(半径)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trap", meta = (ClampMin = "0.0"))
 	float ExplosionRadius = 300.f;
+
+	//爆発のパーティクル(エディタで指定)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap|Effect")
+	TObjectPtr<UNiagaraSystem> ExplosionEffect;
+
+	//エフェクトの大きさ調整用
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap|Effect")
+	FVector ExplosionEffectScale = FVector(1.f);
 
 	//爆発の演出用(エフェクト・サウンドなどをBPで繋ぐ)
 	UFUNCTION(BlueprintImplementableEvent, Category = "Trap")
