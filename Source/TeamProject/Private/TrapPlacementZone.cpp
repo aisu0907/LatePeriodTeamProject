@@ -43,6 +43,7 @@ void ATrapPlacementZone::BeginPlay()
 	const FVector Extent = ZoneBox->GetUnscaledBoxExtent();
 	ZoneMesh->SetRelativeScale3D(Extent / 50.f);
 
+	//ƒ}ƒeƒŠƒAƒ‹‚ğİ’è
 	if (ZoneMaterial)
 	{
 		ZoneMesh->SetMaterial(0, ZoneMaterial);
