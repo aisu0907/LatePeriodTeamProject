@@ -54,6 +54,10 @@ private:
 	UPROPERTY()
 	TObjectPtr<AAdventurerCharacter> PlayerChara;
 
+	// プレビュー用の半透明マテリアル(M_TrapPreview を指定)
+	UPROPERTY(EditAnywhere, Category = "TrapModel")
+	TObjectPtr<UMaterialInterface> PreviewMaterial;
+
 	// 選択したトラップ取り出し用
 	TSubclassOf<ATrapBase> GetSelectedTrapClass() const;
 
@@ -61,10 +65,13 @@ private:
 
 	bool bHasValidTarget = false;
 
+	//設置位置
 	FVector TargetLocation = FVector::ZeroVector;
 
+	//設置マス
 	FIntPoint TargetCell = FIntPoint::ZeroValue;
 
+	//設置エリア
 	TWeakObjectPtr<ATrapPlacementZone> TargetZone;
 	
 };

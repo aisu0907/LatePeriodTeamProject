@@ -42,6 +42,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Trap")
 	void SetTrapEnabled(bool bEnabled);
 
+	UFUNCTION(BlueprintCallable, Category = "TrapModel")
+	// TrapBase.h
+	UStaticMeshComponent* GetTrapMesh() const { return TrapMesh; }
+
 	//外部からのトラップの状態参照
 	UFUNCTION(BlueprintPure, Category = "Trap")
 	ETrapState GetTrapState() const { return TrapState; }
