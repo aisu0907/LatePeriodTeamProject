@@ -23,6 +23,7 @@ enum  class EItemEffectType:uint8
 	MoveSpeed	UMETA(DisplayName = "MoveSpeed"),
 	JumpPower	UMETA(DisplayName = "JumpPower"),
 	Vision		UMETA(DisplayName = "Vision"),
+	TrapGuard	UMETA(DisplauName = "TrapGuard"),
 };
 USTRUCT(BlueprintType)
 struct  FItemEffectEntry
@@ -34,7 +35,9 @@ struct  FItemEffectEntry
 
 	// 1未満=デバフ、1より大きい=バフ(視界悪化では使わない)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (ClampMin = "0.01", EditCondition = "Type != EItemEffectType::Vision", EditConditionHides))
+		meta = (ClampMin = "0.01",
+			EditCondition = "Type == EItemEffectType::MoveSpeed ||Type == EItemEffectType::JumpPower ", 
+			EditConditionHides))
 	float Multiplier = 0.5f;
 
 	// 視界悪化の強さ(0=ほぼ変化なし、3=最大)

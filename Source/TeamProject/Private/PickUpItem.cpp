@@ -21,6 +21,7 @@
 
 #include "Components/PostProcessComponent.h"
 
+#include "TrapBase.h"
 // Sets default values
 APickUpItem::APickUpItem()
 {
@@ -160,10 +161,13 @@ void APickUpItem::ApplyEntry(AAdventurerCharacter* Target, const FItemEffectEntr
 	const float Mult = FMath::Max(E.Multiplier, 0.01f);
 	TWeakObjectPtr<UPostProcessComponent>VisionPP;
 
+	FName GuardTag = NAME_None;
+
 	switch (E.Type)
 	{
 	case EItemEffectType::MoveSpeed:CM->MaxWalkSpeed *= Mult; break;
 	case EItemEffectType::JumpPower:CM->JumpZVelocity *= Mult; break;
+	case EItemEffectType::TrapGuard:GuardTag = ATrapBase::AddTrapGuard(Target); break;
 	case EItemEffectType::Vision:
 	{
 		UPostProcessComponent* PP = NewObject<UPostProcessComponent>(Target);
@@ -203,7 +207,7 @@ void APickUpItem::ApplyEntry(AAdventurerCharacter* Target, const FItemEffectEntr
 	const float Duration = FMath::Max(E.Duration, 0.1f);
 
 	FTimerDelegate Delegate = FTimerDelegate::CreateWeakLambda(Target,
-		[Target, Type, Mult, LoopNC, VisionPP]()
+		[Target, Type, Mult, LoopNC, VisionPP,GuardTag]()
 			{
 				if (UCharacterMovementComponent* C = Target->GetCharacterMovement())
 				{
@@ -211,12 +215,18 @@ void APickUpItem::ApplyEntry(AAdventurerCharacter* Target, const FItemEffectEntr
 					{
 					case EItemEffectType::MoveSpeed: C->MaxWalkSpeed /= Mult;	break;
 					case EItemEffectType::JumpPower:C->JumpZVelocity /= Mult;	break;
-					case EItemEffectType::Vision:								break;
+					default: break;
 					}
 				}
 		
+				//ŽžŠÔØ‚ê‚É‚È‚Á‚½ƒK[ƒh‚ðŠO‚·
+				if (Type == EItemEffectType::TrapGuard)
+				{
+					Target->Tags.RemoveSingle(GuardTag);
+				}
+
 				if (UNiagaraComponent* NC = LoopNC.Get()) { NC->DestroyComponent(); }
-				if (UPostProcessComponent* PP = VisionPP.Get()) { PP->DestroyComponent(); }
+					
 		});
 	FTimerHandle Handle;
 	Target->GetWorldTimerManager().SetTimer(Handle, Delegate, Duration, false);

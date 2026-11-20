@@ -30,9 +30,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trap", meta = (ClampMin = "0.0"))
 	float ExplosionRadius = 300.f;
 
+	/*
+
 	//爆発のパーティクル(エディタで指定)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap|Effect")
 	TObjectPtr<UNiagaraSystem> ExplosionEffect;
+	
+	//エフェクトの大きさ調整用
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap|Effect")
+	FVector ExplosionEffectScale = FVector(1.f);*/
+
+	//爆発のパーティクル(Cascade)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap|Effect")
+	TObjectPtr<UParticleSystem> ExplosionEffect;
 
 	//エフェクトの大きさ調整用
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Trap|Effect")

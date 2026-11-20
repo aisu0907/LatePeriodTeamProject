@@ -9,6 +9,17 @@
 
 #include "GamePlayModeBase.h" //ゲームモード
 
+//---------------------------------------------------
+
+#include "Misc/Guid.h"//シールドのために追加
+
+namespace
+{
+	const TCHAR* GuardPrefix = TEXT("TrapGuard_");
+}
+
+//---------------------------------------------------
+
 // Sets default values
 ATrapBase::ATrapBase()
 {
@@ -67,6 +78,11 @@ void ATrapBase::OnTriggerBeginOverlap(
 	//衝突したオブジェクトを判定
 	if (CanTrigger(OtherActor))
 	{
+		//ガードを消費
+		if (ConsumeTrapGuard(OtherActor))
+		{
+			return;
+		}
 		//トラップの予備動作を起動
 		TriggerTrap(OtherActor);
 	}
@@ -145,4 +161,31 @@ void ATrapBase::SetTrapEnabled(bool bEnabled)
 	GetWorldTimerManager().ClearTimer(CooldownTimer);
 
 	TrapState = bEnabled ? ETrapState::Idle : ETrapState::Disabled;
+}
+
+//ガード効果----------------------------------------
+
+FName ATrapBase::AddTrapGuard(AActor* Actor)
+{
+	if (!Actor) { return NAME_None; }
+
+	//重ね掛けの区別が可能なように、個別の固有の名前にする
+	const FName Tag(*FString::Printf(TEXT("%s%s"), GuardPrefix, *FGuid::NewGuid().ToString()));
+	Actor->Tags.Add(Tag);
+	return Tag;
+}
+
+bool ATrapBase::ConsumeTrapGuard(AActor* Actor)
+{
+	if (!Actor) { return false; }
+
+	for (int32 i = 0; i < Actor->Tags.Num(); ++i)
+	{
+		if (Actor->Tags[i].ToString().StartsWith(GuardPrefix))
+		{
+			Actor->Tags.RemoveAt(i);//一個消費
+			return true;
+		}
+	}
+	return false;
 }

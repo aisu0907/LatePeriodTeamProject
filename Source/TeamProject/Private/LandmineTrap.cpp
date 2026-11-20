@@ -23,6 +23,22 @@ ALandmineTrap::ALandmineTrap()
 
 void ALandmineTrap::ActivateTrap_Implementation(AActor* TriggeringActor)
 {
+	if (ExplosionEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(
+			this,
+			ExplosionEffect,
+			GetActorLocation(),
+			GetActorRotation(),
+			ExplosionEffectScale
+			
+		);
+	}
+
+	//演出と地雷本体を消す
+	OnExploded();
+	TrapMesh->SetVisibility(false);
+	 
 	//演出(BP側)と、地雷本体を消す
 	OnExploded();
 	TrapMesh->SetVisibility(false);
