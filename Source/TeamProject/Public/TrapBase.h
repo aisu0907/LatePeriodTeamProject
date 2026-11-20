@@ -64,6 +64,11 @@ public:
 		return (PlaceableSurfaces & Bit) != 0;
 	}
 
+	//シールド効果(追加)
+	static FName AddTrapGuard(AActor* Actor);		//つけたガードのタグを返す
+	static bool ConsumeTrapGuard(AActor* Actor);	//ガードがあると一つを消費する。trueを返す
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
