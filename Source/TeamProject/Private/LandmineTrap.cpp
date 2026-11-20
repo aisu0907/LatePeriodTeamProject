@@ -6,8 +6,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "AdventurerCharacter.h"
-
-p
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 // Sets default values
