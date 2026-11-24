@@ -34,6 +34,12 @@ void AGamePlayModeBase::BeginPlay()
         Zones.Add(*It);
     }
 
+    if (UAudioSubsystem* Audio = GetGameInstance()->GetSubsystem<UAudioSubsystem>())
+    {
+        Audio->RegisterAudioData(BGMAudioData);
+        Audio->RegisterAudioData(SEAudioData);
+    }
+
 
     //初期フェーズ設定
     SetPhase(EGamePhase::Trap);
