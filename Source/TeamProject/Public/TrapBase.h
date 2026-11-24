@@ -11,6 +11,9 @@ class UShapeComponent;
 class UStaticMeshComponent;
 class AGamePlayModeBase;
 
+//ナイアガラ
+class UNiagaraSystem;
+
 UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EPlaceableSurface : uint8
 {
@@ -67,6 +70,17 @@ public:
 	//シールド効果(追加)
 	static FName AddTrapGuard(AActor* Actor);		//つけたガードのタグを返す
 	static bool ConsumeTrapGuard(AActor* Actor);	//ガードがあると一つを消費する。trueを返す
+
+	UFUNCTION(BlueprintCallable, Category = "Trap")
+	bool TryGuard(AActor* Victim);
+
+	// ガードに成功したときに呼ばれる(ブループリントで音や演出を作れる)
+	UFUNCTION(BlueprintImplementableEvent, Category = "Trap")
+	void OnGuarded(AActor* Victim);
+
+	// ガード成功時に、被害者の位置に出すエフェクト(任意)
+	UPROPERTY(EditAnywhere, Category = "Trap|Guard")
+	UNiagaraSystem* GuardEffect = nullptr;
 
 
 protected:

@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameplayTagContainer.h" 
 #include "GamePlayModeBase.generated.h"
 
 class AAdventurerCharacter;
 class ATrapPlacementZone;
+class UAudioDataAsset;
 enum class EAdventurerState : uint8;
 
 //プレイヤーIndex
@@ -87,6 +89,14 @@ private:
 
 	UPROPERTY()
 	TArray<TObjectPtr<ATrapPlacementZone>> Zones;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	TObjectPtr<UAudioDataAsset> BGMAudioData;
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	TObjectPtr<UAudioDataAsset> SEAudioData;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	FGameplayTag TrapPhaseBGM;
 
 	//ログインした順に0,1
 	int32 NextPlayerIndex = 0;

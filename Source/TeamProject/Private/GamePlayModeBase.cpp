@@ -34,6 +34,12 @@ void AGamePlayModeBase::BeginPlay()
         Zones.Add(*It);
     }
 
+    if (UAudioSubsystem* Audio = GetGameInstance()->GetSubsystem<UAudioSubsystem>())
+    {
+        Audio->RegisterAudioData(BGMAudioData);
+        Audio->RegisterAudioData(SEAudioData);
+    }
+
 
     //初期フェーズ設定
     SetPhase(EGamePhase::Trap);
@@ -67,6 +73,7 @@ AActor* AGamePlayModeBase::ChoosePlayerStart_Implementation(AController* Player)
             return *It;
         }
     }
+
     // 見つからなければ通常の挙動にフォールバック
     return Super::ChoosePlayerStart_Implementation(Player);
 }

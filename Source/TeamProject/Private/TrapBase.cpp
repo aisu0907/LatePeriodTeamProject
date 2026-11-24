@@ -12,6 +12,8 @@
 //---------------------------------------------------
 
 #include "Misc/Guid.h"//シールドのために追加
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
 
 namespace
 {
@@ -78,11 +80,6 @@ void ATrapBase::OnTriggerBeginOverlap(
 	//衝突したオブジェクトを判定
 	if (CanTrigger(OtherActor))
 	{
-		//ガードを消費
-		if (ConsumeTrapGuard(OtherActor))
-		{
-			return;
-		}
 		//トラップの予備動作を起動
 		TriggerTrap(OtherActor);
 	}
@@ -188,4 +185,18 @@ bool ATrapBase::ConsumeTrapGuard(AActor* Actor)
 		}
 	}
 	return false;
+}
+
+//シールド
+bool ATrapBase::TryGuard(AActor* Victim)
+{
+	if (!ConsumeTrapGuard(Victim)) { return false; }
+
+	if (GuardEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation
+		(GetWorld(), GuardEffect, Victim->GetActorLocation());
+	}
+	OnGuarded(Victim);
+	return true;
 }

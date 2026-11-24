@@ -38,10 +38,6 @@ void ALandmineTrap::ActivateTrap_Implementation(AActor* TriggeringActor)
 	//演出と地雷本体を消す
 	OnExploded();
 	TrapMesh->SetVisibility(false);
-	 
-	//演出(BP側)と、地雷本体を消す
-	OnExploded();
-	TrapMesh->SetVisibility(false);
 
 	//爆発範囲内のプレイヤーを初期位置へ戻す
 	TArray<AActor*> Players;
@@ -55,6 +51,9 @@ void ALandmineTrap::ActivateTrap_Implementation(AActor* TriggeringActor)
 
 		//範囲外なら無視
 		if (FVector::Dist(Player->GetActorLocation(), GetActorLocation()) > ExplosionRadius)
+			continue;
+
+		if (TryGuard(Player))
 			continue;
 
 		Player->RespawnAtStart();
