@@ -73,6 +73,7 @@ AActor* AGamePlayModeBase::ChoosePlayerStart_Implementation(AController* Player)
             return *It;
         }
     }
+
     // 見つからなければ通常の挙動にフォールバック
     return Super::ChoosePlayerStart_Implementation(Player);
 }

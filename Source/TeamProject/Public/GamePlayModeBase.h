@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameplayTagContainer.h" 
 #include "GamePlayModeBase.generated.h"
 
 class AAdventurerCharacter;
@@ -93,6 +94,9 @@ private:
 	TObjectPtr<UAudioDataAsset> BGMAudioData;
 	UPROPERTY(EditAnywhere, Category = "Audio")
 	TObjectPtr<UAudioDataAsset> SEAudioData;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	FGameplayTag TrapPhaseBGM;
 
 	//ÉçÉOÉCÉìÇµÇΩèáÇ…0,1
 	int32 NextPlayerIndex = 0;
