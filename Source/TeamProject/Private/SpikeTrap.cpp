@@ -69,6 +69,9 @@ void ASpikeTrap::ActivateTrap_Implementation(AActor* TriggeringActor)
 	{
 		if (AAdventurerCharacter* Player=Cast<AAdventurerCharacter>(Actor))
 		{
+			if (TryGuard(Player))
+				continue;
+
 			Player->RespawnAtStart();
 		}
 	}
