@@ -90,7 +90,7 @@ void AGamePlayModeBase::SetPhase(EGamePhase NewPhase)
     {
         if (UAudioSubsystem* Audio = GetGameInstance()->GetSubsystem<UAudioSubsystem>())
         {
-            //Audio->execPlayBGM()
+            Audio->PlayBGM(AudioTags::BGM_TrapPhase);
         }
 
         SetZonesVisible(true); //設置エリア表示

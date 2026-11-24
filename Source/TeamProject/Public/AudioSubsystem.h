@@ -21,6 +21,8 @@ class TEAMPROJECT_API UAudioSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
+public:
+
     // ---- データ登録(ステージ開始/終了時に呼ぶ) ----
     UFUNCTION(BlueprintCallable, Category = "Audio")
     void RegisterAudioData(UAudioDataAsset* Data);
