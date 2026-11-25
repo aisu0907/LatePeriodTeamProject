@@ -8,7 +8,18 @@ public class TeamProject : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayTags", "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] 
+		{	"Core", 
+			"CoreUObject", 
+			"Engine", 
+			"InputCore", 
+			"EnhancedInput", 
+			"GameplayTags", 
+			"Niagara",
+            "SlateCore",   // ← 追加
+		    "Slate",       // ← Slateウィジェットも使うなら一緒に
+			"UMG"          // ← UMGを使っているなら
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

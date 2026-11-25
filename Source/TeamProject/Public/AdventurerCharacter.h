@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+//AdventurerCharacter.h
 
 #pragma once
 
@@ -35,7 +36,7 @@ public:
 	// Sets default values for this character's properties
 	AAdventurerCharacter();
 
-    //外部からのプレイヤーの状態参照
+    // 外部からのプレイヤーの状態参照
     UFUNCTION(BlueprintPure, Category = "Player")
     EAdventurerState GetAdventurerState() const { return AdventurerState; }
 
@@ -48,14 +49,14 @@ public:
     // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-    //手に持っているアイテム
+    // 手に持っているアイテム
     UPROPERTY()
     APickUpItem* HeldItem = nullptr;
 
-    //バフ効果があるか
+    // バフ効果があるか
     bool bBuffActive = false;
 
-    //アニメーション
+    // アニメーション
     UPROPERTY(EditAnywhere, Category = "Animation")
     TObjectPtr<UAnimSequence> IdleAnim;
 
@@ -66,21 +67,25 @@ public:
     UPROPERTY(EditAnywhere, Category = "Animation")
     TObjectPtr<UAnimSequence> JumpAnim;
 
-    //トラップに当たったらリスポーン
+    // トラップに当たったらリスポーン
     UFUNCTION(BlueprintCallable, Category = "Player")
     void RespawnAtStart();
 
+    // プレイヤーの位置リセット用
     UFUNCTION(BlueprintCallable, Category = "Player")
     void PlayerReset(EAdventurerState NewState);
 
+    // プレイヤーの状態変更用
     UFUNCTION(BlueprintCallable, Category = "Player")
     void ChangeState(EAdventurerState NewState);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+    // コントローラー接触時
     virtual void PossessedBy(AController* NewController) override;
 
+    // 接触時処理
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
@@ -91,33 +96,34 @@ private:
 
 #pragma region InputFunction
 
-    //キャラ移動関数
+    // 移動操作
     UFUNCTION()
     void Move(const FInputActionValue& Value);
 
-    //視点操作関数
+    // 視点操作
     UFUNCTION()
     void Look(const FInputActionValue& Value);
 
-    //トラップ設置操作関数
+    // トラップ設置操作
     UFUNCTION()
     void PlaceTrap();
 
-    //トラップ回転操作関数
+    // トラップ回転操作
     UFUNCTION()
     void TrapRotate();
 
-    //トラップスロット操作関数
+    // トラップスロット操作
     UFUNCTION()
     void TrapSlotChange(const FInputActionValue& Value);
 
     UFUNCTION()
     void Cancel();
 
+    //phaseスキップ
     UFUNCTION()
     void PhaseSkip();
 
-    //アイテム使用関数
+    // アイテム使用関数
     UFUNCTION()
     void UseHeldItem();
 

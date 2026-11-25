@@ -7,9 +7,10 @@
 #include "GameFramework/PlayerStart.h"
 #include "TrapPlacementZone.h"
 #include "AudioSubsystem.h"
-#include "AudioTags.h"
+#include "AudioHelper.h"
 
 using enum EGamePhase;
+
 
 //コンストラクタ
 AGamePlayModeBase::AGamePlayModeBase()
@@ -34,6 +35,7 @@ void AGamePlayModeBase::BeginPlay()
         Zones.Add(*It);
     }
 
+    //Audioをロード
     if (UAudioSubsystem* Audio = GetGameInstance()->GetSubsystem<UAudioSubsystem>())
     {
         Audio->RegisterAudioData(BGMAudioData);
@@ -95,10 +97,8 @@ void AGamePlayModeBase::SetPhase(EGamePhase NewPhase)
     //トラップフェーズの時
     if (NewPhase == EGamePhase::Trap)
     {
-        if (UAudioSubsystem* Audio = GetGameInstance()->GetSubsystem<UAudioSubsystem>())
-        {
-            Audio->PlayBGM(AudioTags::BGM_TrapPhase);
-        }
+        //BGMを再生
+        Audio::PlayBGM(this, AudioTags::BGM_TrapPhase);
 
         SetZonesVisible(true); //設置エリア表示
         //タイマー起動

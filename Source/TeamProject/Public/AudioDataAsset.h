@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+//AudiDataAsset.h
 
 #pragma once
 
@@ -14,20 +15,17 @@ struct FSoundEntry
 {
     GENERATED_BODY()
 
-    //音
+    // 音
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<USoundBase> Sound;
 
-    //音量(最小値0.0, 最大値2.0)
+    // 音量(最小値0.0, 最大値2.0)
     UPROPERTY(EditAnywhere, BlueprintReadOnly,
         meta = (ClampMin = "0.0", ClampMax = "2.0",
                    UIMin = "0.0",    UIMax = "2.0"))   
     float VolumeMultiplier = 1.f;
 };
 
-/**
- * 
- */
 UCLASS()
 class TEAMPROJECT_API UAudioDataAsset : public UPrimaryDataAsset
 {

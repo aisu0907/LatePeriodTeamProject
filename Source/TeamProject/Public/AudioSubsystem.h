@@ -1,4 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+// AudioSubsystem.h
 
 #pragma once
 
@@ -7,10 +8,6 @@
 #include "GameplayTagContainer.h"
 #include "AudioDataAsset.h"
 #include "AudioSubsystem.generated.h"
-
-/**
- * 
- */
 
 class UAudioComponent;
 class USoundBase;
@@ -24,9 +21,10 @@ class TEAMPROJECT_API UAudioSubsystem : public UGameInstanceSubsystem
 public:
 
     // ---- データ登録(ステージ開始/終了時に呼ぶ) ----
+    //サウンドデータロード
     UFUNCTION(BlueprintCallable, Category = "Audio")
     void RegisterAudioData(UAudioDataAsset* Data);
-
+    //サウンドデータ破棄
     UFUNCTION(BlueprintCallable, Category = "Audio")
     void UnregisterAudioData(UAudioDataAsset* Data);
 	
@@ -57,6 +55,9 @@ public:
     // アクターから鳴らす(アクター固有音)
     UFUNCTION(BlueprintCallable, Category = "Audio")
     void PlaySoundDirect2D(USoundBase* Sound, float Volume = 1.f);
+
+    // Subsystem取得
+    static UAudioSubsystem* Get(const UObject* WorldContext);
 
 private:
     // ロード済みならSound、未ロードならnullptrを返す

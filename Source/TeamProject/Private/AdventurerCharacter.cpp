@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+//AdventurerCharacter.cpp
 
 #include "AdventurerCharacter.h"
 #include "Camera/CameraComponent.h"
@@ -10,54 +10,52 @@
 #include "EnhancedInputSubsystems.h"
 #include "TimerManager.h"
 
-//クラス
-#include "PickUpItem.h" //アイテム
+// クラス
+#include "PickUpItem.h" // アイテム
 #include "TrapPlacementComponent.h"
 #include "GamePlayModeBase.h"
 #include "Goal.h"
 #include "TrapBase.h"
 
-//アニメーション
+// アニメーション
 #include"Animation/AnimSequence.h"
-
-
 
 using enum EAdventurerState;
 
 // Sets default values
 AAdventurerCharacter::AAdventurerCharacter()
 {
-	//アニメーション
+	// アニメーション
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//キャラクターの移動管理用
+	// キャラクターの移動管理用
 	MoveSetting = GetCharacterMovement();
 
-	//キャラクターがカメラの向きを向かないように
+	// キャラクターがカメラの向きを向かないように
 	bUseControllerRotationYaw = true; 
 	MoveSetting->bOrientRotationToMovement = false;
 
-	////カメラアームコンポーネント追加
+	//// カメラアームコンポーネント追加
 	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	//CameraBoom->SetupAttachment(RootComponent);
-	////カメラアーム設定
+	//// カメラアーム設定
 	//CameraBoom->TargetArmLength = DefaultArmLength;
 	//CameraBoom->bUsePawnControlRotation = true;
 
-	//カメラコンポーネント追加
+	// カメラコンポーネント追加
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(GetCapsuleComponent());
 	FollowCamera->SetRelativeLocation(FVector(0.f, 0.f, 64.f)); //目の高さ
-	//カメラ設定
+	// カメラ設定
 	FollowCamera->bUsePawnControlRotation = true;
 
-	//自分の全身メッシュはカメラに映さない
+	// 自分の全身メッシュはカメラに映さない
 	GetMesh()->SetOwnerNoSee(true);
 
-	//TrapPlacementコンポーネント
+	// TrapPlacementコンポーネント
 	TrapPlacement = CreateDefaultSubobject<UTrapPlacementComponent>(TEXT("TrapPlacementComp"));
 }
 
@@ -65,29 +63,20 @@ AAdventurerCharacter::AAdventurerCharacter()
 void AAdventurerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	UE_LOG(LogTemp, Warning, TEXT("BeginPlay: bind overlap"));
 
+	// GamePlayMode取得s
 	GamePlayMode = GetWorld()->GetAuthGameMode<AGamePlayModeBase>();
 
-	//Overlapを登録
+	// Overlapを登録
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(
 		this, &AAdventurerCharacter::OnOverlapBegin);
 
-	//初期位置を保存
+	// 初期位置を保存
 	StartTransform = GetActorTransform();
 
-	//プレイヤー・カメラのステータス設定
+	// プレイヤー・カメラのステータス設定
 	//CameraBoom->TargetArmLength = DefaultArmLength;
 	MoveSetting->AirControl = AirControllPower;
-
-	if (TrapSlotChangeAction)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Action = %s, ValueType = %d"),
-			*TrapSlotChangeAction->GetName(),
-			(int32)TrapSlotChangeAction->ValueType);
-	}
-
 }
 
 // Called every frame
@@ -95,12 +84,12 @@ void AAdventurerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//死亡中はアニメを切り替えない
+	// 死亡中はアニメを切り替えない
 	if (AdventurerState == Inoperable)
 		return;
 
 
-	//アニメーション
+	// アニメーション
 	UAnimSequence* Next = IdleAnim;
 	if (MoveSetting->IsFalling())
 	{
@@ -111,7 +100,7 @@ void AAdventurerCharacter::Tick(float DeltaTime)
 		Next = WalkAnim;
 	}
 
-	//変わった時だけ再生しなおす(舞フレーム呼ぶと最初で止まる)
+	// 変わった時だけ再生しなおす(舞フレーム呼ぶと最初で止まる)
 	if (Next && Next != CurrentAnim)
 	{
 		CurrentAnim = Next;
@@ -127,22 +116,27 @@ void AAdventurerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	
 	if (auto* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		// 移動
 		EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::Move);
-		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::Look);
-		EIC->BindAction(PlaceTrapAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PlaceTrap);
-		EIC->BindAction(TrapRotateAction, ETriggerEvent::Started, this, &AAdventurerCharacter::TrapRotate);
-		EIC->BindAction(TrapSlotChangeAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::TrapSlotChange);
-
-		EIC->BindAction(PhaseSkipAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PhaseSkip);
+		// ジャンプ
 		EIC->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		// カメラ操作
+		EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::Look);
+		// トラップ設置
+		EIC->BindAction(PlaceTrapAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PlaceTrap);
+		// トラップ回転
+		EIC->BindAction(TrapRotateAction, ETriggerEvent::Started, this, &AAdventurerCharacter::TrapRotate);
+		// トラップスロットチェンジ
+		EIC->BindAction(TrapSlotChangeAction, ETriggerEvent::Triggered, this, &AAdventurerCharacter::TrapSlotChange);
+		// TrapPhaseスキップ用
+		EIC->BindAction(PhaseSkipAction, ETriggerEvent::Started, this, &AAdventurerCharacter::PhaseSkip);
 
-		//アイテム
+		// アイテム
 		EIC->BindAction(UseAction, ETriggerEvent::Started, this, &AAdventurerCharacter::UseHeldItem);
 	}
 }
 
-//接続時呼び出し
 void AAdventurerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -165,19 +159,17 @@ void AAdventurerCharacter::PossessedBy(AController* NewController)
 	UE_LOG(LogTemp, Warning, TEXT("PlayerIndex = %d"), PlayerIndex);
 }
 
-//接触時呼び出し
 void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (AdventurerState != PlayMode) { return; }
 
-	//ゴールの時
+	//ゴールに触れている時
 	if (AGoal* Goal = Cast<AGoal>(OtherActor))
 	{
 		if (Goal->IgnorePlayerIndex != PlayerIndex)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Goal"));
+		{;
 			GamePlayMode->RoundWin(this);
 		}
 	}
@@ -185,7 +177,6 @@ void AAdventurerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, A
 
 }
 
-//キャラ移動関数
 void AAdventurerCharacter::Move(const FInputActionValue& Value)
 {
 	if (AdventurerState == Inoperable)
@@ -201,7 +192,6 @@ void AAdventurerCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(Right, Input.X);
 }
 
-//視点操作関数
 void AAdventurerCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D Input = Value.Get<FVector2D>();
@@ -209,12 +199,11 @@ void AAdventurerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(Input.Y);
 }
 
-//トラップ設置操作関数
 void AAdventurerCharacter::PlaceTrap()
 {
 	if (AdventurerState != TrapMode) { return; }
 
-	// 設置数の上限チェック(最大未満のときだけ置ける)
+	// 設置数の上限チェック\
 	if (TrapPlaceCount >= TrapPlaceMax)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Max Trap"));
@@ -229,37 +218,30 @@ void AAdventurerCharacter::PlaceTrap()
 
 }
 
-//トラップ回転操作関数
 void AAdventurerCharacter::TrapRotate()
 {
 	if (AdventurerState != TrapMode)
 		return;
 }
 
-//トラップスロット操作関数
 void AAdventurerCharacter::TrapSlotChange(const FInputActionValue& Value)
 {
 	if (AdventurerState != TrapMode)
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("slotChange"));
-
-	//数値を取得
+	// 数値を取得
 	const float Axis = Value.Get<float>();
 
-	UE_LOG(LogTemp, Warning, TEXT("%f"), Axis);
-
+	// +-判定
 	const int32 Dir = (Axis > 0.f) ? 1 : -1;
 
-	UE_LOG(LogTemp, Warning, TEXT("%d"), Dir);
-
+	// TrapPlacementがあった場合
 	if (TrapPlacement)
 	{
 		TrapPlacement->ChangeSelectTrapIndex(Dir);
 	}
 }
 
-//アイテム使用関数
 void AAdventurerCharacter::UseHeldItem()
 {
 	if (HeldItem&&!bBuffActive)
@@ -278,7 +260,6 @@ void AAdventurerCharacter::PhaseSkip()
 {
 	if (GamePlayMode)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Skip"));
 
 		GamePlayMode->TrapPhaseEnd();
 	}
@@ -288,18 +269,22 @@ void AAdventurerCharacter::PlayerReset(EAdventurerState NewState)
 {
 	UE_LOG(LogTemp, Warning, TEXT("PlayerReset"));
 
-	ChangeState(NewState);
-	TrapPlaceCount = 0; //トラップ設置数リセット
-	SetActorTransform(StartTransform); //位置を初期位置にリセット
-	MoveSetting->StopMovementImmediately(); //速度・加速度を0に
+	ChangeState(NewState); // 状態変更
+	// トラップフェーズの時だけ
+	if(GamePlayMode->GetGamePhase() == EGamePhase::Trap)
+		TrapPlaceCount = 0; // トラップ設置数リセット
+	SetActorTransform(StartTransform); // 位置を初期位置にリセット
+	MoveSetting->StopMovementImmediately(); // 速度・加速度を0に
 }
 
 void AAdventurerCharacter::ChangeState(EAdventurerState NewState)
 {
+	//同じじゃない場合
 	if (AdventurerState == NewState)
 		return;
 
-	AdventurerState = NewState; //トラップ設置モードに
+	//状態更新
+	AdventurerState = NewState;
 }
 
 //リスポーン

@@ -1,9 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+//AudioSubsystem.cpp
 
 #include "AudioSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundBase.h"
+#include "Engine/GameInstance.h"
 #include "Engine/StreamableManager.h"
 #include "Engine/AssetManager.h"
 
@@ -117,4 +119,16 @@ void UAudioSubsystem::PlaySoundDirect2D(USoundBase* Sound, float Volume)
     if (!Sound) return;
     //音を鳴らす
     UGameplayStatics::PlaySound2D(GetWorld(), Sound, Volume);
+}
+
+UAudioSubsystem* UAudioSubsystem::Get(const UObject* WorldContext)
+{
+    //レベルが取得出来ない場合
+    if (!WorldContext) return nullptr;
+
+    // 専用サーバーでは音を鳴らさない
+    if (IsRunningDedicatedServer()) return nullptr;
+
+    const UGameInstance* GI = UGameplayStatics::GetGameInstance(WorldContext);
+    return GI ? GI->GetSubsystem<UAudioSubsystem>() : nullptr;
 }
