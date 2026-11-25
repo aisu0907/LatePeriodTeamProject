@@ -203,7 +203,7 @@ void AAdventurerCharacter::PlaceTrap()
 {
 	if (AdventurerState != TrapMode) { return; }
 
-	// 設置数の上限チェック\
+	// 設置数の上限チェック
 	if (TrapPlaceCount >= TrapPlaceMax)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Max Trap"));
