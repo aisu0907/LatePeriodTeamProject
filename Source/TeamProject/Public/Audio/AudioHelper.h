@@ -4,7 +4,7 @@
 #pragma once
 
 #include "GameplayTagContainer.h"
-#include "AudioTags.h"
+#include "Audio/AudioTags.h"
 
 class USoundBase;
 

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 // AudioHelper.cpp
 
-#include "AudioHelper.h"
-#include "AudioSubsystem.h"
+#include "Audio/AudioHelper.h"
+#include "Audio/AudioSubsystem.h"
 
 namespace Audio
 {
