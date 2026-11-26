@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SlotWidget.h"
-#include "SlotStyleAsset.h"
+#include "UI/Slot/SlotWidget.h"
+#include "UI/Slot/SlotStyleAsset.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 
@@ -14,5 +14,11 @@ void USlotWidget::SetSlotData(const FSlotView& Data)
     }
 
     SetVisibility(ESlateVisibility::HitTestInvisible);
-    IconImage->SetBrushResourceObject(Data.Icon);
+    IconImage->SetBrushResourceObject(Data.Icon); //表示するデータセット
+}
+
+void USlotWidget::ApplyStyle(const USlotStyleAsset* Style)
+{
+    if (!Style) return;
+    FrameImage->SetBrush(Style->FrameBrush); //スタイルセット
 }
