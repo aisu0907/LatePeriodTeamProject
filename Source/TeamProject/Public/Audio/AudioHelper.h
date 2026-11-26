@@ -5,6 +5,7 @@
 
 #include "GameplayTagContainer.h"
 #include "Audio/AudioTags.h"
+#include "Audio/AudioSubsystem.h"
 
 class USoundBase;
 

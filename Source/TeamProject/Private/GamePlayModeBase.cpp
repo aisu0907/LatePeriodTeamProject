@@ -6,7 +6,6 @@
 #include "EngineUtils.h"
 #include "GameFramework/PlayerStart.h"
 #include "TrapPlacementZone.h"
-#include "Audio/AudioSubsystem.h"
 #include "Audio/AudioHelper.h"
 
 using enum EGamePhase;
