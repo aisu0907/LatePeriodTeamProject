@@ -15,6 +15,12 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 
+//追加
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerStart.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 namespace
 {
 	const TCHAR* GuardPrefix = TEXT("TrapGuard_");
@@ -149,6 +155,17 @@ void ATrapBase::ResetTrap_Implementation()
 
 void ATrapBase::SendToCheckpoint(AActor* Victim)
 {
+	//追加
+	if (!Victim) { return; }
+
+	AActor* Start = UGameplayStatics::GetActorOfClass(this, APlayerStart::StaticClass());
+	if (!Start) { return; }
+
+	if (ACharacter* Character = Cast<ACharacter>(Victim))
+	{
+		Character->GetCharacterMovement()->StopMovementImmediately();
+	}
+	Victim->TeleportTo(Start->GetActorLocation(), Start->GetActorRotation());
 }
 
 void ATrapBase::SetTrapEnabled(bool bEnabled)
