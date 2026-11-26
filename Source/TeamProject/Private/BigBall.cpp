@@ -1,28 +1,27 @@
 #include "BigBall.h"
+#include "Components/SphereComponent.h"        
 #include "Components/StaticMeshComponent.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PlayerStart.h"
-#include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"  
 
 ABigBall::ABigBall()
 {
  	
 	PrimaryActorTick.bCanEverTick = true;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(Mesh);
-	Mesh->SetSimulatePhysics(true);
-	Mesh->SetNotifyRigidBodyCollision(true);//Hitイベントを発生させる
-	Mesh->SetCollisionProfileName(TEXT("PhysicActor"));
+	TrapMesh->SetSimulatePhysics(true);
+	TrapMesh->SetCollisionProfileName(TEXT("PhysicsActor")); // 【修正】PhysicActor → PhysicsActor
 
+	TriggerSphere = CreateDefaultSubobject<USphereComponent>(TEXT("TriggerSphere"));
+	SetupTriggerVolume(TriggerSphere);        // これで基底のTriggerVolumeに登録される
+	TriggerSphere->SetupAttachment(TrapMesh);
+	TriggerSphere->InitSphereRadius(60.f);
 }
 void ABigBall::BeginPlay()
 {
 	Super::BeginPlay();
-	Mesh->OnComponentHit.AddDynamic(this, &ABigBall::OnBallHit);
+	InitialLocation = TrapMesh->GetComponentLocation();
+	InitialRotation = TrapMesh->GetComponentRotation();
 
-	InitialTransform = GetActorTransform();
 	GetWorldTimerManager().SetTimer(RespawnTimer, this, &ABigBall::RespawnBall, RespawnTime, false);
 }
 
@@ -31,13 +30,13 @@ void ABigBall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	const FVector Velocity = Mesh->GetPhysicsLinearVelocity();
+	const FVector Velocity = TrapMesh->GetPhysicsLinearVelocity();
 	const float Speed = Velocity.Size();
 
 	//速度上限
 	if (Speed > MaxSpeed)
 	{
-		Mesh->SetPhysicsLinearVelocity(Velocity.GetSafeNormal() * MaxSpeed);
+		TrapMesh->SetPhysicsLinearVelocity(Velocity.GetSafeNormal() * MaxSpeed);
 	}
 	if (!bArmed)
 	{
@@ -50,31 +49,23 @@ void ABigBall::Tick(float DeltaTime)
 	}
 }
 
-void ABigBall::OnBallHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, FVector NormalImpulse,
-	const FHitResult& Hit)
+void ABigBall::ActivateTrap_Implementation(AActor* TriggeringActor)
 {
-	if (ACharacter* Player = Cast<ACharacter>(OtherActor))
-	{
-		RespawnPlayer(Player);
-	}
-}
+	if (!TriggeringActor) { return; }
 
-void ABigBall::RespawnPlayer(ACharacter* Player)
-{
-	AActor* Start = UGameplayStatics::GetActorOfClass(this, APlayerStart::StaticClass());
-	if (!Start) { return; }
+	// シールドがあれば消費して終わり
+	if (TryGuard(TriggeringActor)) { return; }
 
-	Player->GetCharacterMovement()->StopMovementImmediately();
-	Player->TeleportTo(Start->GetActorLocation(), Start->GetActorRotation());
+	SendToCheckpoint(TriggeringActor);
 }
 
 void ABigBall::RespawnBall()
 {
 	//速度をリセットしてから戻す
-	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
-	Mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-	SetActorTransform(InitialTransform, false, nullptr, ETeleportType::TeleportPhysics);
+	TrapMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	TrapMesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+	TrapMesh->SetWorldLocationAndRotation(InitialLocation, InitialRotation,
+		false, nullptr, ETeleportType::TeleportPhysics);
 
 	bArmed = false;//再スタートの時に生成直後の判定で消えないように
 

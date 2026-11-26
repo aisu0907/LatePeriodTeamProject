@@ -3,11 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "TrapBase.h"
 #include "BigBall.generated.h"
 
+class USphereComponent;
+
 UCLASS()
-class TEAMPROJECT_API ABigBall : public AActor
+class TEAMPROJECT_API ABigBall : public ATrapBase
 {
 	GENERATED_BODY()
 	
@@ -20,14 +22,12 @@ protected:
 
 	virtual void BeginPlay() override;
 	
-	UFUNCTION()
-	void OnBallHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, FVector NormalImpulse,
-		const FHitResult& Hit);
-
-	void RespawnPlayer(ACharacter* Player);
+	virtual void ActivateTrap_Implementation(AActor* TriggeringActor)override;
 
 	void RespawnBall();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USphereComponent> TriggerSphere;
 
 	//リスポーンの秒数
 	UPROPERTY(EditAnywhere, Category = "Ball")
@@ -37,11 +37,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Ball")
 	float MaxSpeed = 1500.f;
 
-	FTransform InitialTransform;
+	FVector InitialLocation;
+	FRotator InitialRotation;
 	FTimerHandle RespawnTimer;
-
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* Mesh;
 
 	//消える判定を始める速度
 	UPROPERTY(EditAnywhere, Category = "Ball")
