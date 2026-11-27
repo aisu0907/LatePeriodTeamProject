@@ -23,7 +23,14 @@ enum  class EItemEffectType:uint8
 	MoveSpeed	UMETA(DisplayName = "MoveSpeed"),
 	JumpPower	UMETA(DisplayName = "JumpPower"),
 	Vision		UMETA(DisplayName = "Vision"),
-	TrapGuard	UMETA(DisplauName = "TrapGuard"),
+	TrapGuard	UMETA(DisplayName = "TrapGuard"),
+	Slow		UMETA(DisplayName = "Slow"),
+};
+UENUM(BlueprintType)
+enum class EItemEffectTarget : uint8
+{
+	Self UMETA(DisplayName = "Self"),
+	Opponent UMETA(DisplayName = "Opponent"),
 };
 USTRUCT(BlueprintType)
 struct  FItemEffectEntry
@@ -33,18 +40,32 @@ struct  FItemEffectEntry
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EItemEffectType Type = EItemEffectType::MoveSpeed;
 
+	
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	EItemEffectTarget Target = EItemEffectTarget::Self;
+
 	// 1未満=デバフ、1より大きい=バフ(視界悪化では使わない)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (ClampMin = "0.01",
-			EditCondition = "Type == EItemEffectType::MoveSpeed ||Type == EItemEffectType::JumpPower ", 
+			EditCondition = "Type == EItemEffectType::MoveSpeed ||Type == EItemEffectType::JumpPower||Type==EItemEffectType::Slow", 
 			EditConditionHides))
 	float Multiplier = 0.5f;
 
 	// 視界悪化の強さ(0=ほぼ変化なし、3=最大)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (ClampMin = "0.0", ClampMax = "3.0", EditCondition = "Type == EItemEffectType::Vision", EditConditionHides))
+		meta = (ClampMin = "0.0", ClampMax = "1.0", EditCondition = "Type == EItemEffectType::Vision", EditConditionHides))
 	float Intensity = 0.7f;
 
+	// 視界悪化がかかるまでの秒数(0=即座)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (ClampMin = "0.0", EditCondition = "Type == EItemEffectType::Vision", EditConditionHides))
+	float FadeIn = 0.5f;
+
+	// 視界悪化が消えるまでの秒数(0=即座)。Duration が終わってから、この秒数かけて戻る
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (ClampMin = "0.0", EditCondition = "Type == EItemEffectType::Vision", EditConditionHides))
+	float FadeOut = 1.0f;
 	// 効果時間(秒)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.1"))
 	float Duration = 5.f;

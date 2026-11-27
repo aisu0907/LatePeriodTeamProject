@@ -18,10 +18,17 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
-
-#include "Components/PostProcessComponent.h"
+#include"Camera/CameraComponent.h"
 
 #include "TrapBase.h"
+
+namespace
+{
+	//っ歯科医悪化の重複したときよう
+	TMap<TWeakObjectPtr<UCameraComponent>, uint32>GVisionOwner;
+	uint32 GVisionNextId = 1;
+}
+
 // Sets default values
 APickUpItem::APickUpItem()
 {
@@ -102,12 +109,37 @@ void APickUpItem::Use()
 				GetWorld(), UseParticle, Loc, Rot, EffectScale, true);
 		}
 
+		//相手にかける効果のために、自分以外のプレイヤーを先に集める
+		TArray<AAdventurerCharacter*>Opponent;
+		{
+			TArray<AActor*>All;
+			UGameplayStatics::GetAllActorsOfClass(this, AAdventurerCharacter::StaticClass(), All);
+			for (AActor* A : All)
+			{
+				AAdventurerCharacter* P = Cast < AAdventurerCharacter> (A);
+				if (P && P != Ch && P->GetPlayerIndex() != Ch->GetPlayerIndex())
+				{
+					Opponent.Add(P);
+				}
+			}
+		}
+
 		//効果リストを全部適用
 		float MaxDuration = 0.1f;
 		for (const FItemEffectEntry& E : Effects)
 		{
-			ApplyEntry(Ch, E);
-			MaxDuration = FMath::Max(MaxDuration, E.Duration);
+			if (E.Target == EItemEffectTarget::Self)
+			{
+				ApplyEntry(Ch, E);
+				MaxDuration = FMath::Max(MaxDuration, E.Duration);
+			}
+			else
+			{
+				for (AAdventurerCharacter* Opp : Opponent)
+				{
+					ApplyEntry(Opp, E);
+				}
+			}
 		}
 
 		// バフ中に出し続けるエフェクト(Niagara)
@@ -155,28 +187,33 @@ void APickUpItem::Use()
 	//効果1件分の適応
 void APickUpItem::ApplyEntry(AAdventurerCharacter* Target, const FItemEffectEntry& E)
 {
+	if (!Target)return;
+
 	UCharacterMovementComponent* CM = Target->GetCharacterMovement();
 	if (!CM)return;
 
-	const float Mult = FMath::Max(E.Multiplier, 0.01f);
-	TWeakObjectPtr<UPostProcessComponent>VisionPP;
+	const float Mult = (E.Type == EItemEffectType::Slow)
+		? FMath::Clamp(E.Multiplier, 0.01f, 1.f)
+		: FMath::Max(E.Multiplier, 0.01f);
+	const EItemEffectType Type = E.Type;					//下から上に移動
+	const float Duration = FMath::Max(E.Duration, 0.1f);
 
 	FName GuardTag = NAME_None;
 
 	switch (E.Type)
 	{
-	case EItemEffectType::MoveSpeed:CM->MaxWalkSpeed *= Mult; break;
+	case EItemEffectType::MoveSpeed:      
+	case EItemEffectType::Slow:          
+		CM->MaxWalkSpeed *= Mult; break;
 	case EItemEffectType::JumpPower:CM->JumpZVelocity *= Mult; break;
 	case EItemEffectType::TrapGuard:GuardTag = ATrapBase::AddTrapGuard(Target); break;
 	case EItemEffectType::Vision:
 	{
-		UPostProcessComponent* PP = NewObject<UPostProcessComponent>(Target);
-		PP->bUnbound = true;
-		PP->BlendWeight = 1.f;
-		PP->Priority = 10.f;
+		UCameraComponent* Cam = Target->FindComponentByClass<UCameraComponent>();
+		if (!Cam) break;
 
 		const float I = FMath::Clamp(E.Intensity, 0.f, 1.f);
-		FPostProcessSettings& S = PP->Settings;
+		FPostProcessSettings& S = Cam->PostProcessSettings;
 
 		S.bOverride_VignetteIntensity = true;
 		S.VignetteIntensity = FMath::Lerp(0.4f, 2.0f, I);//周辺を暗く
@@ -187,8 +224,51 @@ void APickUpItem::ApplyEntry(AAdventurerCharacter* Target, const FItemEffectEntr
 		S.bOverride_SceneFringeIntensity = true;
 		S.SceneFringeIntensity = FMath::Lerp(0.f, 4.f, I);//色のにじみ
 
-		PP->RegisterComponent();
-		VisionPP = PP;
+		Cam->PostProcessBlendWeight = 0.f;
+
+		// このカメラに最後にかけた効果として記録(重なったら新しい方が優先)
+		TWeakObjectPtr<UCameraComponent> WeakCam = Cam;
+		const uint32 MyId = GVisionNextId++;
+		GVisionOwner.Add(WeakCam, MyId);
+
+		const float StartTime = Target->GetWorld()->GetTimeSeconds();
+		const float FadeIn = FMath::Max(E.FadeIn, 0.f);
+		const float FadeOut = FMath::Max(E.FadeOut, 0.f);
+		TSharedPtr<FTimerHandle> FadeHandle = MakeShared<FTimerHandle>();
+
+		// フェードイン → 維持 → フェードアウト
+		FTimerDelegate FadeDelegate = FTimerDelegate::CreateWeakLambda(Target,
+			[Target, WeakCam, MyId, StartTime, FadeIn, FadeOut, Duration, FadeHandle]()
+			{
+				UCameraComponent* C = WeakCam.Get();
+				UWorld* W = Target->GetWorld();
+				const uint32* Owner = GVisionOwner.Find(WeakCam);
+
+				// カメラが無い/新しい効果に引き継がれた → この効果は何もせず終了
+				if (!C || !W || !Owner || *Owner != MyId)
+				{
+					Target->GetWorldTimerManager().ClearTimer(*FadeHandle);
+					return;
+				}
+
+				const float T = W->GetTimeSeconds() - StartTime;
+
+				const float In = (FadeIn > 0.f) ? T / FadeIn : 1.f;                      // 0→1
+				const float Out = (T <= Duration) ? 1.f
+					: (FadeOut > 0.f) ? 1.f - (T - Duration) / FadeOut : 0.f;  // 1→0
+
+				const float Weight = FMath::Clamp(FMath::Min(In, Out), 0.f, 1.f);
+				C->PostProcessBlendWeight = FMath::SmoothStep(0.f, 1.f, Weight);
+
+				if (T >= Duration + FadeOut)
+				{
+					C->PostProcessBlendWeight = 0.f;
+					GVisionOwner.Remove(WeakCam);
+					Target->GetWorldTimerManager().ClearTimer(*FadeHandle);
+				}
+			});
+
+		Target->GetWorldTimerManager().SetTimer(*FadeHandle, FadeDelegate, 0.016f, true);
 		break;
 	}
 	}
@@ -202,18 +282,16 @@ void APickUpItem::ApplyEntry(AAdventurerCharacter* Target, const FItemEffectEntr
 			EAttachLocation::KeepRelativeOffset, true, ENCPoolMethod::None);
 	}
 
-	//終了時に割り戻す(アイテム本体は消されるためキャラのタイマーを使う)
-	const EItemEffectType Type = E.Type;
-	const float Duration = FMath::Max(E.Duration, 0.1f);
-
 	FTimerDelegate Delegate = FTimerDelegate::CreateWeakLambda(Target,
-		[Target, Type, Mult, LoopNC, VisionPP,GuardTag]()
+		[Target, Type, Mult, LoopNC,GuardTag]()
 			{
 				if (UCharacterMovementComponent* C = Target->GetCharacterMovement())
 				{
 					switch (Type)
 					{
-					case EItemEffectType::MoveSpeed: C->MaxWalkSpeed /= Mult;	break;
+					case EItemEffectType::MoveSpeed: 
+					case EItemEffectType::Slow:         
+						C->MaxWalkSpeed /= Mult; break;
 					case EItemEffectType::JumpPower:C->JumpZVelocity /= Mult;	break;
 					default: break;
 					}
