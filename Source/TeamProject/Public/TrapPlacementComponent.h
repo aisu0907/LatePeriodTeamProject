@@ -23,9 +23,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction) override;
 
-	// 設置出来るトラップを入れる用
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trap")
-	TArray  <TSubclassOf<ATrapBase>> TrapList;
 
 	// 選択してるトラップの番号
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Trap")
@@ -50,6 +47,14 @@ protected:
 private:
 
 	void UpdateTarget();
+
+	// 設置出来るトラップを入れる用
+	UPROPERTY(EditAnywhere, Category = "Trap")
+	TArray<TSubclassOf<ATrapBase>> TrapList;
+
+	// トラップ画像
+	UPROPERTY()
+	TArray<TObjectPtr<UTextureRenderTarget2D>> TrapIcons;
 
 	UPROPERTY()
 	TObjectPtr<AAdventurerCharacter> PlayerChara;

@@ -7,6 +7,7 @@
 #include "GameFramework/Pawn.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
+#include "UI/ActorIconSubsystem.h"
 #include "AdventurerCharacter.h"
 #include "TrapBase.h"
 
@@ -22,22 +23,34 @@ void UTrapPlacementComponent::BeginPlay()
 {
     Super::BeginPlay();
 
+    // 全トラップのアイコンを先に撮影しておく
+    if (UWorld* World = GetWorld())
+    {
+        if (UActorIconSubsystem* Icons = World->GetSubsystem<UActorIconSubsystem>())
+        {
+            for (const TSubclassOf<ATrapBase>& TrapClass : TrapList)
+            {
+                TrapIcons.Add(Icons->GetIcon(TrapClass));
+            }
+        }
+    }
+
     //親クラスのAdventurerを取得
     PlayerChara = Cast<AAdventurerCharacter>(GetOwner());
 
-    if (TrapList.Num() == 0)
-    {
-        UClass* Loaded = LoadClass<ATrapBase>(
-            nullptr, TEXT("/Game/Asset/BluePrint/BP_SpikeTrap.BP_SpikeTrap_C"));
-        if (Loaded)
-        {
-            TrapList.Add(Loaded);
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("BP_SpikeTrap load failed"));
-        }
-    }
+    //if (TrapList.Num() == 0)
+    //{
+    //    UClass* Loaded = LoadClass<ATrapBase>(
+    //        nullptr, TEXT("/Game/Asset/BluePrint/BP_SpikeTrap.BP_SpikeTrap_C"));
+    //    if (Loaded)
+    //    {
+    //        TrapList.Add(Loaded);
+    //    }
+    //    else
+    //    {
+    //        UE_LOG(LogTemp, Warning, TEXT("BP_SpikeTrap load failed"));
+    //    }
+    //}
 }
 
 //選択トラップ変更用
