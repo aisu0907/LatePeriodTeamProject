@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SlotSelectorWidget.h"
+#include "UI/Slot/SlotSelectorWidget.h"
 
